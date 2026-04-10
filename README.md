@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ministry of Healing and Deliverance
+
+A modern, production-ready church web application built with Next.js 14+, Firebase, and Tailwind CSS.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript (strict)
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Icons**: Lucide Icons
+- **Animations**: Framer Motion
+- **Forms**: React Hook Form + Zod
+- **Notifications**: Sonner
+- **Rich Text**: TipTap (placeholder, ready to integrate)
+- **Auth**: Firebase Auth (email/password + Google)
+- **Database**: Cloud Firestore
+- **Storage**: Firebase Storage
+- **Client State**: Zustand
+- **Server State**: TanStack React Query
+- **Auth Middleware**: next-firebase-auth-edge
+- **HTML Sanitization**: DOMPurify
+- **Image Compression**: browser-image-compression
+
+## Features
+
+- Role-based access control (Admin, Editor, Contributor, User)
+- Blog system with categories, likes, and real-time comments
+- Prayer request submission and management
+- Contact form with message management
+- Giving/partnership page with bank details
+- Dark mode support
+- Responsive mobile-first design
+- Smooth Framer Motion animations
+- SEO optimization (meta tags, OpenGraph, sitemap, robots.txt)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+- A Firebase project with Auth, Firestore, and Storage enabled
+
+### 1. Clone and Install
+
+```bash
+cd mhd-app
+npm install
+```
+
+### 2. Environment Variables
+
+Copy `.env.local.example` to `.env.local` and fill in your Firebase credentials:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Required variables:
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase client API key |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase app ID |
+| `FIREBASE_ADMIN_PROJECT_ID` | Same as project ID |
+| `FIREBASE_ADMIN_CLIENT_EMAIL` | Service account email |
+| `FIREBASE_ADMIN_PRIVATE_KEY` | Service account private key |
+| `FIREBASE_API_KEY` | Same as client API key (for middleware) |
+| `COOKIE_SECRET_CURRENT` | Random secret for auth cookies |
+| `COOKIE_SECRET_PREVIOUS` | Previous cookie secret (rotation) |
+| `USE_SECURE_COOKIES` | `true` in production, `false` locally |
+| `REVALIDATION_SECRET` | Secret for ISR revalidation API |
+
+### 3. Firebase Setup
+
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable **Authentication** (Email/Password + Google providers)
+3. Create a **Firestore Database**
+4. Enable **Firebase Storage**
+5. Generate a service account key (Project Settings > Service Accounts)
+6. Deploy Firestore security rules from `firestore.rules`
+
+### 4. Set Admin User
+
+After the first user signs up, manually set their role to `"admin"` in the Firestore `users` collection.
+
+### 5. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/                    # Next.js App Router pages
+    (public)/             # Public pages (Home, About, Blog, etc.)
+    (auth)/               # Login and Signup
+    dashboard/            # Protected dashboard pages
+    api/                  # API routes
+  components/
+    ui/                   # shadcn/ui primitives
+    layout/               # Navbar, Footer
+    blog/                 # PostCard, LikeButton, CommentSection
+    forms/                # Form components
+    providers/            # Auth, Query, Theme providers
+    shared/               # Reusable shared components
+  lib/                    # Utilities, Firebase config, validation
+  hooks/                  # Custom React hooks
+  stores/                 # Zustand stores
+  services/               # Firebase service layer
+  types/                  # TypeScript types
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel (Recommended)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push to GitHub
+2. Import project in [Vercel](https://vercel.com)
+3. Add all environment variables
+4. Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## RBAC Roles
 
-## Deploy on Vercel
+| Role | Capabilities |
+|------|-------------|
+| Admin | Full access: manage users, posts, comments, prayer requests, settings |
+| Editor | Create/edit/publish posts, moderate comments |
+| Contributor | Create/edit drafts only (cannot publish) |
+| User | View content, like posts, comment |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private - Ministry of Healing and Deliverance
