@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Globe } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
-import { signIn, signInWithGoogle } from "@/lib/auth";
+import { signIn, signInWithGoogle, EmailNotVerifiedError } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 30 * 60 * 1000; // 30 minutes
+const STORAGE_KEY = "mhd_login_attempts";
+
+interface AttemptsState {
+  count: number;
+  lockedUntil: number | null;
+}
+
+function getAttempts(): AttemptsState {
+  if (typeof window === "undefined") return { count: 0, lockedUntil: null };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { count: 0, lockedUntil: null };
+    return JSON.parse(raw) as AttemptsState;
+  } catch {
+    return { count: 0, lockedUntil: null };
+  }
+}
+
+function saveAttempts(state: AttemptsState) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function clearAttempts() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 function authErrorMessage(err: unknown): string {
   if (err && typeof err === "object" && "code" in err) {
     const code = String((err as { code?: string }).code);
@@ -31,6 +59,8 @@ function authErrorMessage(err: unknown): string {
       return "Too many attempts. Please try again later.";
     if (code === "auth/popup-closed-by-user")
       return "Sign-in was cancelled. Please try again.";
+    if (code === "auth/unauthorized-domain")
+      return "This domain is not authorized for sign-in. Please contact the administrator.";
   }
   if (err instanceof Error && err.message) return err.message;
   return "Something went wrong. Please try again.";
@@ -39,6 +69,8 @@ function authErrorMessage(err: unknown): string {
 export default function LoginPage() {
   const router = useRouter();
   const [oauthLoading, setOauthLoading] = useState(false);
+  const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const {
     register,
@@ -49,13 +81,76 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
+  useEffect(() => {
+    const { lockedUntil } = getAttempts();
+    if (lockedUntil && lockedUntil > Date.now()) {
+      setLockoutRemaining(lockedUntil - Date.now());
+      timerRef.current = setInterval(() => {
+        const remaining = (lockedUntil ?? 0) - Date.now();
+        if (remaining <= 0) {
+          clearAttempts();
+          setLockoutRemaining(0);
+          if (timerRef.current) clearInterval(timerRef.current);
+        } else {
+          setLockoutRemaining(remaining);
+        }
+      }, 1000);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const isLockedOut = lockoutRemaining > 0;
+  const lockoutMinutes = Math.ceil(lockoutRemaining / 60_000);
+
+  function recordFailedAttempt() {
+    const state = getAttempts();
+    state.count += 1;
+    if (state.count >= MAX_ATTEMPTS) {
+      state.lockedUntil = Date.now() + LOCKOUT_MS;
+      setLockoutRemaining(LOCKOUT_MS);
+      timerRef.current = setInterval(() => {
+        const remaining = (state.lockedUntil ?? 0) - Date.now();
+        if (remaining <= 0) {
+          clearAttempts();
+          setLockoutRemaining(0);
+          if (timerRef.current) clearInterval(timerRef.current);
+        } else {
+          setLockoutRemaining(remaining);
+        }
+      }, 1000);
+    }
+    saveAttempts(state);
+  }
+
   const onSubmit = async (data: LoginFormData) => {
+    if (isLockedOut) return;
     try {
       await signIn(data.email, data.password);
+      clearAttempts();
       toast.success("Welcome back!");
-      router.push("/dashboard");
+      router.refresh();
+      router.replace("/dashboard");
     } catch (err) {
-      toast.error(authErrorMessage(err));
+      if (err instanceof EmailNotVerifiedError) {
+        toast.warning(
+          "Your email is not verified. We've sent a new verification link — please check your inbox.",
+          { duration: 8000 }
+        );
+        return;
+      }
+      recordFailedAttempt();
+      const state = getAttempts();
+      if (state.lockedUntil && state.lockedUntil > Date.now()) {
+        toast.error(
+          `Too many failed attempts. Try again in ${Math.ceil(LOCKOUT_MS / 60_000)} minutes, or reset your password.`
+        );
+      } else {
+        toast.error(
+          `${authErrorMessage(err)} (${MAX_ATTEMPTS - state.count} attempts remaining)`
+        );
+      }
     }
   };
 
@@ -63,14 +158,18 @@ export default function LoginPage() {
     setOauthLoading(true);
     try {
       await signInWithGoogle();
+      clearAttempts();
       toast.success("Signed in with Google");
-      router.push("/dashboard");
+      router.refresh();
+      router.replace("/dashboard");
     } catch (err) {
       toast.error(authErrorMessage(err));
     } finally {
       setOauthLoading(false);
     }
   };
+
+  const busy = isSubmitting || oauthLoading;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-background">
@@ -82,6 +181,16 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {isLockedOut && (
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-center text-sm text-destructive">
+              Too many failed attempts. Try again in{" "}
+              <span className="font-semibold">{lockoutMinutes} min</span>, or{" "}
+              <Link href="/forgot-password" className="underline underline-offset-2">
+                reset your password
+              </Link>.
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -90,6 +199,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 placeholder="you@example.com"
+                disabled={busy || isLockedOut}
                 aria-invalid={!!errors.email}
                 {...register("email")}
               />
@@ -98,11 +208,20 @@ export default function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
                 autoComplete="current-password"
+                disabled={busy || isLockedOut}
                 aria-invalid={!!errors.password}
                 {...register("password")}
               />
@@ -112,9 +231,10 @@ export default function LoginPage() {
             </div>
             <Button
               type="submit"
-              className="w-full"
-              disabled={isSubmitting || oauthLoading}
+              className="w-full gap-2"
+              disabled={busy || isLockedOut}
             >
+              {isSubmitting && <Loader2 className="size-4 animate-spin" />}
               {isSubmitting ? "Signing in…" : "Sign in"}
             </Button>
           </form>
@@ -133,9 +253,13 @@ export default function LoginPage() {
             variant="outline"
             className="w-full gap-2"
             onClick={handleGoogle}
-            disabled={isSubmitting || oauthLoading}
+            disabled={busy || isLockedOut}
           >
-            <Globe className="size-4" aria-hidden />
+            {oauthLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Globe className="size-4" aria-hidden />
+            )}
             {oauthLoading ? "Connecting…" : "Sign in with Google"}
           </Button>
         </CardContent>

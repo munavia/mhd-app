@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  sendEmailVerification as firebaseSendEmailVerification,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   updateProfile,
   type User as FirebaseUser,
 } from "firebase/auth";
@@ -25,6 +27,13 @@ async function clearSessionCookie() {
   await fetch("/api/logout", { method: "GET" });
 }
 
+export class EmailNotVerifiedError extends Error {
+  constructor() {
+    super("Please verify your email before signing in.");
+    this.name = "EmailNotVerifiedError";
+  }
+}
+
 export async function signUp(name: string, email: string, password: string) {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(credential.user, { displayName: name });
@@ -38,12 +47,21 @@ export async function signUp(name: string, email: string, password: string) {
     updatedAt: serverTimestamp(),
   });
 
-  await setSessionCookie(credential.user);
+  await firebaseSendEmailVerification(credential.user);
+  // Sign out immediately -- user must verify email before gaining a session
+  await firebaseSignOut(auth);
   return credential.user;
 }
 
 export async function signIn(email: string, password: string) {
   const credential = await signInWithEmailAndPassword(auth, email, password);
+
+  if (!credential.user.emailVerified) {
+    await firebaseSendEmailVerification(credential.user);
+    await firebaseSignOut(auth);
+    throw new EmailNotVerifiedError();
+  }
+
   await setSessionCookie(credential.user);
   return credential.user;
 }
@@ -70,6 +88,16 @@ export async function signInWithGoogle() {
 export async function signOut() {
   await clearSessionCookie();
   await firebaseSignOut(auth);
+}
+
+export async function sendPasswordReset(email: string) {
+  await firebaseSendPasswordResetEmail(auth, email);
+}
+
+export async function resendVerificationEmail() {
+  if (auth.currentUser) {
+    await firebaseSendEmailVerification(auth.currentUser);
+  }
 }
 
 export async function getUserRole(uid: string): Promise<Role> {

@@ -2,8 +2,17 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(1, "Password is required"),
 });
+
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .max(100, "Password must be less than 100 characters")
+  .regex(/[a-z]/, "Must include a lowercase letter")
+  .regex(/[A-Z]/, "Must include an uppercase letter")
+  .regex(/[0-9]/, "Must include a number")
+  .regex(/[^a-zA-Z0-9]/, "Must include a symbol (!@#$%...)");
 
 export const signupSchema = z
   .object({
@@ -12,16 +21,30 @@ export const signupSchema = z
       .min(2, "Name must be at least 2 characters")
       .max(50, "Name must be less than 50 characters"),
     email: z.string().email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .max(100, "Password must be less than 100 characters"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+export const resetPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+export const newPasswordSchema = z
+  .object({
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type NewPasswordFormData = z.infer<typeof newPasswordSchema>;
 
 export const postSchema = z.object({
   title: z

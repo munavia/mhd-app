@@ -15,6 +15,8 @@ const PUBLIC_PATHS = [
   "/prayer-request",
   "/login",
   "/signup",
+  "/forgot-password",
+  "/auth-action",
 ];
 
 function isPublicPath(pathname: string): boolean {
