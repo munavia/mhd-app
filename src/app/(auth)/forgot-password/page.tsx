@@ -36,6 +36,24 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     try {
+      if (process.env.NODE_ENV === "development") {
+        const res = await fetch("/api/auth/password-reset", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-action-origin": window.location.origin,
+          },
+          body: JSON.stringify({ email: data.email }),
+        });
+        const json = (await res.json()) as { resetUrl?: string; error?: string };
+        if (res.ok && json.resetUrl) {
+          window.location.assign(json.resetUrl);
+          return;
+        }
+        toast.error(json.error ?? "Could not start password reset.");
+        return;
+      }
+
       await sendPasswordReset(data.email);
       setSent(true);
     } catch {

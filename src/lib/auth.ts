@@ -7,6 +7,7 @@ import {
   sendEmailVerification as firebaseSendEmailVerification,
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   updateProfile,
+  type ActionCodeSettings,
   type User as FirebaseUser,
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -14,6 +15,43 @@ import { auth, db } from "./firebase";
 import type { Role } from "@/types";
 
 const googleProvider = new GoogleAuthProvider();
+
+/**
+ * Continue URL for password reset / email verification (client-sent emails).
+ *
+ * Important: If the Firebase template Action URL is the default
+ * `https://<project>.firebaseapp.com/__/auth/action`, the user always sees
+ * Firebase's hosted reset form first; `continueUrl` does not replace that page.
+ *
+ * For your custom `/auth-action` UI from email links, set each template's
+ * Action URL to `https://<production-domain>/auth-action` (e.g. Netlify).
+ *
+ * Local dev: forgot-password uses `POST /api/auth/password-reset` (dev only) to
+ * open `/auth-action` directly without the default Firebase screen.
+ *
+ * Optional override: NEXT_PUBLIC_AUTH_ACTION_ORIGIN when the browser origin is wrong.
+ */
+function getAuthActionOrigin(): string {
+  const fromEnv =
+    process.env.NEXT_PUBLIC_AUTH_ACTION_ORIGIN?.replace(/\/$/, "") ?? "";
+  if (fromEnv) return fromEnv;
+  if (typeof window !== "undefined") return window.location.origin;
+  return (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+}
+
+function getAuthActionCodeSettings(): ActionCodeSettings {
+  const origin = getAuthActionOrigin();
+  if (!origin) {
+    throw new Error(
+      "Auth emails: open the app in a browser, or set NEXT_PUBLIC_AUTH_ACTION_ORIGIN / NEXT_PUBLIC_APP_URL."
+    );
+  }
+  return {
+    url: `${origin}/auth-action`,
+    // Web: false so the continue URL is applied correctly; true is aimed at mobile deep links.
+    handleCodeInApp: false,
+  };
+}
 
 async function setSessionCookie(user: FirebaseUser) {
   const idToken = await user.getIdToken();
@@ -47,7 +85,10 @@ export async function signUp(name: string, email: string, password: string) {
     updatedAt: serverTimestamp(),
   });
 
-  await firebaseSendEmailVerification(credential.user);
+  await firebaseSendEmailVerification(
+    credential.user,
+    getAuthActionCodeSettings()
+  );
   // Sign out immediately -- user must verify email before gaining a session
   await firebaseSignOut(auth);
   return credential.user;
@@ -57,7 +98,10 @@ export async function signIn(email: string, password: string) {
   const credential = await signInWithEmailAndPassword(auth, email, password);
 
   if (!credential.user.emailVerified) {
-    await firebaseSendEmailVerification(credential.user);
+    await firebaseSendEmailVerification(
+      credential.user,
+      getAuthActionCodeSettings()
+    );
     await firebaseSignOut(auth);
     throw new EmailNotVerifiedError();
   }
@@ -91,12 +135,19 @@ export async function signOut() {
 }
 
 export async function sendPasswordReset(email: string) {
-  await firebaseSendPasswordResetEmail(auth, email);
+  await firebaseSendPasswordResetEmail(
+    auth,
+    email,
+    getAuthActionCodeSettings()
+  );
 }
 
 export async function resendVerificationEmail() {
   if (auth.currentUser) {
-    await firebaseSendEmailVerification(auth.currentUser);
+    await firebaseSendEmailVerification(
+      auth.currentUser,
+      getAuthActionCodeSettings()
+    );
   }
 }
 
