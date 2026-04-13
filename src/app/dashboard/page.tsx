@@ -26,7 +26,7 @@ import type { Post } from "@/types";
 import { toast } from "sonner";
 
 export default function DashboardHomePage() {
-  const { user, isAdmin, role, can } = useAuth();
+  const { user, role, can } = useAuth();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const [commentCount, setCommentCount] = useState(0);
@@ -40,22 +40,22 @@ export default function DashboardHomePage() {
       setLoading(true);
       try {
         const postsData =
-          role === "contributor"
-            ? await getUserPosts(user.uid)
-            : role === "admin" || role === "editor"
-              ? await getAllPosts()
+          can("post:edit_any") || role === "editor"
+            ? await getAllPosts()
+            : can("post:create")
+              ? await getUserPosts(user.uid)
               : [];
 
         const comments = await getAllComments();
 
         let usersLen = 0;
         let prayersLen = 0;
-        if (isAdmin) {
-          const [users, prayers] = await Promise.all([
-            getAllUsers(),
-            getAllPrayerRequests(),
-          ]);
+        if (can("user:manage")) {
+          const users = await getAllUsers();
           usersLen = users.length;
+        }
+        if (can("prayer:manage")) {
+          const prayers = await getAllPrayerRequests();
           prayersLen = prayers.length;
         }
 
@@ -79,7 +79,7 @@ export default function DashboardHomePage() {
     return () => {
       cancelled = true;
     };
-  }, [user, isAdmin, role]);
+  }, [user, role, can]);
 
   const displayName = user?.displayName || user?.email || "there";
   const recent = posts.slice(0, 5);
@@ -101,10 +101,14 @@ export default function DashboardHomePage() {
           <>
             <Skeleton className="h-28 rounded-xl" />
             <Skeleton className="h-28 rounded-xl" />
-            {isAdmin && (
+            {(can("user:manage") || can("prayer:manage")) && (
               <>
-                <Skeleton className="h-28 rounded-xl" />
-                <Skeleton className="h-28 rounded-xl" />
+                {can("user:manage") && (
+                  <Skeleton className="h-28 rounded-xl" />
+                )}
+                {can("prayer:manage") && (
+                  <Skeleton className="h-28 rounded-xl" />
+                )}
               </>
             )}
           </>
@@ -130,31 +134,31 @@ export default function DashboardHomePage() {
                 <p className="text-2xl font-bold">{commentCount}</p>
               </CardContent>
             </Card>
-            {isAdmin && (
-              <>
-                <Card className="border-border/60 shadow-sm">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total users
-                    </CardTitle>
-                    <Users className="size-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold">{userCount}</p>
-                  </CardContent>
-                </Card>
-                <Card className="border-border/60 shadow-sm">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Prayer requests
-                    </CardTitle>
-                    <Heart className="size-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold">{prayerCount}</p>
-                  </CardContent>
-                </Card>
-              </>
+            {can("user:manage") && (
+              <Card className="border-border/60 shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Total users
+                  </CardTitle>
+                  <Users className="size-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{userCount}</p>
+                </CardContent>
+              </Card>
+            )}
+            {can("prayer:manage") && (
+              <Card className="border-border/60 shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Prayer requests
+                  </CardTitle>
+                  <Heart className="size-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{prayerCount}</p>
+                </CardContent>
+              </Card>
             )}
           </>
         )}

@@ -45,10 +45,10 @@ export default function DashboardPostsPage() {
     setLoading(true);
     try {
       const data =
-        role === "contributor"
-          ? await getUserPosts(user.uid)
-          : role === "admin" || role === "editor"
-            ? await getAllPosts()
+        can("post:edit_any") || role === "editor"
+          ? await getAllPosts()
+          : can("post:create")
+            ? await getUserPosts(user.uid)
             : [];
       setPosts(data);
     } catch (e) {
@@ -56,7 +56,7 @@ export default function DashboardPostsPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, role]);
+  }, [user, role, can]);
 
   useEffect(() => {
     void loadPosts();

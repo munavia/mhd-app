@@ -11,9 +11,11 @@ import { formatDate, truncate } from "@/lib/utils";
 
 interface PostCardProps {
   post: Post;
+  /** First grid items: improves LCP when this card is above the fold */
+  priorityImage?: boolean;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, priorityImage = false }: PostCardProps) {
   const imageUrl = post.featuredImage?.trim();
   const displayDate = post.publishedAt ?? post.createdAt;
 
@@ -30,6 +32,8 @@ export function PostCard({ post }: PostCardProps) {
               src={imageUrl}
               alt={post.title}
               fill
+              priority={priorityImage}
+              loading={priorityImage ? "eager" : "lazy"}
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />

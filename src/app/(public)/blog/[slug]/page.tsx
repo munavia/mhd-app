@@ -132,6 +132,7 @@ export default function BlogPostPage() {
                     alt={post.title}
                     fill
                     priority
+                    loading="eager"
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 672px"
                   />

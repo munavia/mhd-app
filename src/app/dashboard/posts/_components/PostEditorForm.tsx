@@ -25,7 +25,10 @@ import { cn } from "@/lib/utils";
 import { postSchema, type PostFormData } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllCategories } from "@/services/categoryService";
-import { uploadImage } from "@/services/storageService";
+import {
+  uploadImage,
+  FEATURED_IMAGE_HELP_TEXT,
+} from "@/services/storageService";
 import { createPost, updatePost } from "@/services/postService";
 import type { Category, Post } from "@/types";
 
@@ -325,10 +328,13 @@ export function PostEditorForm({
 
               <div className="space-y-2">
                 <Label htmlFor="featured">Featured image</Label>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {FEATURED_IMAGE_HELP_TEXT}
+                </p>
                 <Input
                   id="featured"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                   disabled={uploading}
                   onChange={(e) => void onFileChange(e)}
                 />

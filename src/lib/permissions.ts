@@ -1,21 +1,23 @@
 import type { Action, Role } from "@/types";
 
+const ADMIN_PERMISSIONS: Action[] = [
+  "post:create",
+  "post:edit_own",
+  "post:edit_any",
+  "post:publish",
+  "post:delete_own",
+  "post:delete_any",
+  "comment:create",
+  "comment:delete_own",
+  "comment:moderate",
+  "user:manage",
+  "prayer:manage",
+  "contact:manage",
+  "settings:manage",
+];
+
 const ROLE_PERMISSIONS: Record<Role, Action[]> = {
-  admin: [
-    "post:create",
-    "post:edit_own",
-    "post:edit_any",
-    "post:publish",
-    "post:delete_own",
-    "post:delete_any",
-    "comment:create",
-    "comment:delete_own",
-    "comment:moderate",
-    "user:manage",
-    "prayer:manage",
-    "contact:manage",
-    "settings:manage",
-  ],
+  admin: ADMIN_PERMISSIONS,
   editor: [
     "post:create",
     "post:edit_own",
@@ -25,12 +27,8 @@ const ROLE_PERMISSIONS: Record<Role, Action[]> = {
     "comment:delete_own",
     "comment:moderate",
   ],
-  contributor: [
-    "post:create",
-    "post:edit_own",
-    "comment:create",
-    "comment:delete_own",
-  ],
+  /** Same as admin except cannot assign or change roles (no `user:manage`). */
+  contributor: ADMIN_PERMISSIONS.filter((a) => a !== "user:manage"),
   user: ["comment:create", "comment:delete_own"],
 };
 

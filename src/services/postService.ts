@@ -137,14 +137,11 @@ export async function getUserPosts(
   authorId: string,
   status?: PostStatus
 ): Promise<Post[]> {
-  const constraints = [
-    where("authorId", "==", authorId),
-    orderBy("createdAt", "desc"),
-  ];
-
+  const constraints: QueryConstraint[] = [where("authorId", "==", authorId)];
   if (status) {
     constraints.push(where("status", "==", status));
   }
+  constraints.push(orderBy("createdAt", "desc"));
 
   const q = query(collection(db, POSTS_COLLECTION), ...constraints);
   const snapshot = await getDocs(q);

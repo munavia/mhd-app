@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DocumentSnapshot } from "firebase/firestore";
 import { BookOpen, Search } from "lucide-react";
+import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PostCard } from "@/components/blog/PostCard";
@@ -41,7 +42,10 @@ function PostCardSkeleton() {
 
 export default function BlogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  /** Category slug (matches `post.categories`, not display name) */
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | null>(
+    null
+  );
   const [posts, setPosts] = useState<Post[]>([]);
   const [cursor, setCursor] = useState<DocumentSnapshot | null>(null);
   const [hasMore, setHasMore] = useState(false);
@@ -60,19 +64,25 @@ export default function BlogPage() {
     try {
       const { posts: batch, lastDoc } = await getPublishedPosts({
         pageSize: PAGE_SIZE,
-        category: selectedCategory ?? undefined,
+        category: selectedCategorySlug ?? undefined,
       });
       setPosts(batch);
       setCursor(lastDoc);
       setHasMore(batch.length === PAGE_SIZE);
-    } catch {
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Could not load posts.";
+      const indexHint =
+        /index/i.test(msg) || /indexes\?create_composite/i.test(msg)
+          ? " Deploy Firestore indexes: firebase deploy --only firestore:indexes"
+          : "";
+      toast.error(`${msg}.${indexHint}`);
       setPosts([]);
       setCursor(null);
       setHasMore(false);
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory]);
+  }, [selectedCategorySlug]);
 
   useEffect(() => {
     void fetchFirstPage();
@@ -85,7 +95,7 @@ export default function BlogPage() {
       const { posts: batch, lastDoc } = await getPublishedPosts({
         pageSize: PAGE_SIZE,
         cursor,
-        category: selectedCategory ?? undefined,
+        category: selectedCategorySlug ?? undefined,
       });
       setPosts((prev) => [...prev, ...batch]);
       setCursor(lastDoc);
@@ -95,7 +105,7 @@ export default function BlogPage() {
     } finally {
       setLoadingMore(false);
     }
-  }, [cursor, loadingMore, loading, selectedCategory]);
+  }, [cursor, loadingMore, loading, selectedCategorySlug]);
 
   const filteredPosts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -151,10 +161,10 @@ export default function BlogPage() {
           <div className="mb-8 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => setSelectedCategorySlug(null)}
               className={cn(
                 buttonVariants({
-                  variant: selectedCategory === null ? "default" : "outline",
+                  variant: selectedCategorySlug === null ? "default" : "outline",
                   size: "sm",
                 })
               )}
@@ -165,10 +175,11 @@ export default function BlogPage() {
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => setSelectedCategory(cat.name)}
+                onClick={() => setSelectedCategorySlug(cat.slug)}
                 className={cn(
                   buttonVariants({
-                    variant: selectedCategory === cat.name ? "default" : "outline",
+                    variant:
+                      selectedCategorySlug === cat.slug ? "default" : "outline",
                     size: "sm",
                   })
                 )}
@@ -208,8 +219,12 @@ export default function BlogPage() {
           ) : (
             <>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
+                {filteredPosts.map((post, index) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    priorityImage={index < 3}
+                  />
                 ))}
               </div>
 

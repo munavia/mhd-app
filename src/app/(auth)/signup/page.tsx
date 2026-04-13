@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2, Check, X } from "lucide-react";
+import { ArrowLeft, Loader2, Check, X } from "lucide-react";
 import { signupSchema, type SignupFormData } from "@/lib/validations";
 import { signUp } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -80,13 +80,22 @@ export default function SignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-background">
         <Card className="w-full max-w-md border-border/60 shadow-lg shadow-primary/5">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="font-heading text-2xl">Verify your email</CardTitle>
-            <CardDescription>
-              We&apos;ve sent a verification link to{" "}
-              <span className="font-medium text-foreground">{verifiedEmail}</span>.
-              Please click the link to confirm your account.
-            </CardDescription>
+          <CardHeader className="space-y-1">
+            <Link
+              href="/"
+              className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-4 shrink-0" aria-hidden />
+              Back to home
+            </Link>
+            <div className="space-y-1 text-center">
+              <CardTitle className="font-heading text-2xl">Verify your email</CardTitle>
+              <CardDescription>
+                We&apos;ve sent a verification link to{" "}
+                <span className="font-medium text-foreground">{verifiedEmail}</span>.
+                Please click the link to confirm your account.
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
             <p className="text-sm text-muted-foreground">
@@ -104,11 +113,20 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-background">
       <Card className="w-full max-w-md border-border/60 shadow-lg shadow-primary/5">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="font-heading text-2xl">Join our community</CardTitle>
-          <CardDescription>
-            Create your account for the Ministry of Healing and Deliverance
-          </CardDescription>
+        <CardHeader className="space-y-1">
+          <Link
+            href="/"
+            className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+            Back to home
+          </Link>
+          <div className="space-y-1 text-center">
+            <CardTitle className="font-heading text-2xl">Join our community</CardTitle>
+            <CardDescription>
+              Create your account for the Ministry of Healing and Deliverance
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

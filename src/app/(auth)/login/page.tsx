@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Globe, Loader2 } from "lucide-react";
+import { ArrowLeft, Globe, Loader2 } from "lucide-react";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { signIn, signInWithGoogle, EmailNotVerifiedError } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -174,11 +174,20 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-background">
       <Card className="w-full max-w-md border-border/60 shadow-lg shadow-primary/5">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="font-heading text-2xl">Welcome back</CardTitle>
-          <CardDescription>
-            Sign in to your Ministry of Healing and Deliverance account
-          </CardDescription>
+        <CardHeader className="space-y-1">
+          <Link
+            href="/"
+            className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+            Back to home
+          </Link>
+          <div className="space-y-1 text-center">
+            <CardTitle className="font-heading text-2xl">Welcome back</CardTitle>
+            <CardDescription>
+              Sign in to your Ministry of Healing and Deliverance account
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {isLockedOut && (
