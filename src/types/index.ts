@@ -75,6 +75,7 @@ export interface ContactMessage {
   email: string;
   subject: string;
   message: string;
+  userId?: string;
   read: boolean;
   createdAt: Timestamp;
 }

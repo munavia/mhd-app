@@ -91,7 +91,25 @@ export async function getPost(postId: string): Promise<Post | null> {
   return { id: docSnap.id, ...docSnap.data() } as Post;
 }
 
+/**
+ * Public blog: only published posts. Query must include `status` so Firestore
+ * security rules allow unauthenticated reads (rules require published-only for guests).
+ */
 export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const q = query(
+    collection(db, POSTS_COLLECTION),
+    where("slug", "==", slug),
+    where("status", "==", "published"),
+    limit(1)
+  );
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+  const docSnap = snapshot.docs[0];
+  return { id: docSnap.id, ...docSnap.data() } as Post;
+}
+
+/** Draft or published — only for authenticated staff when generating unique slugs. */
+async function getPostBySlugAnyStatus(slug: string): Promise<Post | null> {
   const q = query(
     collection(db, POSTS_COLLECTION),
     where("slug", "==", slug),
@@ -163,7 +181,7 @@ async function generateUniqueSlug(title: string): Promise<string> {
   let candidate = slug;
 
   while (true) {
-    const existing = await getPostBySlug(candidate);
+    const existing = await getPostBySlugAnyStatus(candidate);
     if (!existing) return candidate;
     suffix++;
     candidate = `${slug}-${suffix}`;

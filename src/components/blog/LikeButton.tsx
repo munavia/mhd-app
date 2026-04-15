@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +18,7 @@ interface LikeButtonProps {
 }
 
 export function LikeButton({ postId, initialLikesCount }: LikeButtonProps) {
+  const t = useTranslations("Blog");
   const { user, isAuthenticated } = useAuth();
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(initialLikesCount);
@@ -47,7 +49,7 @@ export function LikeButton({ postId, initialLikesCount }: LikeButtonProps) {
 
   const onToggle = useCallback(async () => {
     if (!isAuthenticated || !user?.uid) {
-      toast.error("Sign in to like posts.");
+      toast.error(t("signInToLike"));
       return;
     }
     if (pending) return;
@@ -69,11 +71,11 @@ export function LikeButton({ postId, initialLikesCount }: LikeButtonProps) {
     } catch {
       setLiked(prevLiked);
       setLikesCount(prevCount);
-      toast.error("Could not update like. Try again.");
+      toast.error(t("likeError"));
     } finally {
       setPending(false);
     }
-  }, [isAuthenticated, user?.uid, pending, liked, likesCount, postId]);
+  }, [isAuthenticated, user?.uid, pending, liked, likesCount, postId, t]);
 
   return (
     <Button

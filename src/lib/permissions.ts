@@ -37,16 +37,35 @@ export function hasPermission(role: Role | undefined, action: Action): boolean {
   return ROLE_PERMISSIONS[role]?.includes(action) ?? false;
 }
 
-export function getDashboardNavItems(role: Role) {
-  const items = [{ label: "Overview", href: "/dashboard", icon: "LayoutDashboard" }];
+export type DashboardNavKey =
+  | "overview"
+  | "posts"
+  | "comments"
+  | "prayerRequests"
+  | "messages"
+  | "users"
+  | "settings";
+
+export function getDashboardNavItems(role: Role): {
+  navKey: DashboardNavKey;
+  href: string;
+  icon: string;
+}[] {
+  const items: {
+    navKey: DashboardNavKey;
+    href: string;
+    icon: string;
+  }[] = [
+    { navKey: "overview", href: "/dashboard", icon: "LayoutDashboard" },
+  ];
 
   if (hasPermission(role, "post:create")) {
-    items.push({ label: "Posts", href: "/dashboard/posts", icon: "FileText" });
+    items.push({ navKey: "posts", href: "/dashboard/posts", icon: "FileText" });
   }
 
   if (hasPermission(role, "comment:moderate")) {
     items.push({
-      label: "Comments",
+      navKey: "comments",
       href: "/dashboard/comments",
       icon: "MessageSquare",
     });
@@ -54,7 +73,7 @@ export function getDashboardNavItems(role: Role) {
 
   if (hasPermission(role, "prayer:manage")) {
     items.push({
-      label: "Prayer Requests",
+      navKey: "prayerRequests",
       href: "/dashboard/prayer-requests",
       icon: "Heart",
     });
@@ -62,19 +81,19 @@ export function getDashboardNavItems(role: Role) {
 
   if (hasPermission(role, "contact:manage")) {
     items.push({
-      label: "Messages",
+      navKey: "messages",
       href: "/dashboard/messages",
       icon: "Mail",
     });
   }
 
   if (hasPermission(role, "user:manage")) {
-    items.push({ label: "Users", href: "/dashboard/users", icon: "Users" });
+    items.push({ navKey: "users", href: "/dashboard/users", icon: "Users" });
   }
 
   if (hasPermission(role, "settings:manage")) {
     items.push({
-      label: "Settings",
+      navKey: "settings",
       href: "/dashboard/settings",
       icon: "Settings",
     });

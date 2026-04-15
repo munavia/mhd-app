@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useForm, type FieldErrors, type UseFormRegister } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -47,6 +48,7 @@ function CommentBody({
   onReplySubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   resetReply: () => void;
 }) {
+  const t = useTranslations("Comments");
   const { user, isAuthenticated } = useAuth();
   const isOwn = !!user?.uid && comment.userId === user.uid;
   const showReplyForm = depth === 0 && replyingTo === comment.id;
@@ -87,7 +89,7 @@ function CommentBody({
                 onClick={() => setReplyingTo(showReplyForm ? null : comment.id)}
               >
                 <Reply className="size-3.5" aria-hidden />
-                Reply
+                {t("reply")}
               </Button>
             )}
             {isOwn && (
@@ -99,14 +101,14 @@ function CommentBody({
                 onClick={async () => {
                   try {
                     await deleteComment(comment.id, postId);
-                    toast.success("Comment removed.");
+                    toast.success(t("removed"));
                   } catch {
-                    toast.error("Could not delete comment.");
+                    toast.error(t("deleteError"));
                   }
                 }}
               >
                 <Trash2 className="size-3.5" aria-hidden />
-                Delete
+                {t("delete")}
               </Button>
             )}
           </div>
@@ -116,11 +118,11 @@ function CommentBody({
               className="mt-3 space-y-2 rounded-md border border-border/60 bg-muted/30 p-3"
             >
               <Label htmlFor={`reply-${comment.id}`} className="text-xs">
-                Reply to {comment.userName}
+                {t("replyTo", { name: comment.userName })}
               </Label>
               <Textarea
                 id={`reply-${comment.id}`}
-                placeholder="Write a reply…"
+                placeholder={t("replyPlaceholder")}
                 rows={3}
                 className="resize-none"
                 {...replyRegister("content")}
@@ -130,7 +132,7 @@ function CommentBody({
               )}
               <div className="flex gap-2">
                 <Button type="submit" size="sm" disabled={replySubmitting}>
-                  {replySubmitting ? "Posting…" : "Post reply"}
+                  {replySubmitting ? t("posting") : t("postReply")}
                 </Button>
                 <Button
                   type="button"
@@ -141,7 +143,7 @@ function CommentBody({
                     setReplyingTo(null);
                   }}
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </div>
             </form>
@@ -153,6 +155,8 @@ function CommentBody({
 }
 
 export function CommentSection({ postId }: CommentSectionProps) {
+  const t = useTranslations("Comments");
+  const tCommon = useTranslations("Common");
   const { user, isAuthenticated } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -189,43 +193,43 @@ export function CommentSection({ postId }: CommentSectionProps) {
 
   const onSubmitMain = mainForm.handleSubmit(async (data) => {
     if (!user?.uid) {
-      toast.error("Sign in to comment.");
+      toast.error(t("signInToComment"));
       return;
     }
     try {
       await addComment({
         postId,
         userId: user.uid,
-        userName: user.displayName || user.email || "Member",
+        userName: user.displayName || user.email || tCommon("member"),
         userPhotoURL: user.photoURL || undefined,
         content: data.content.trim(),
       });
       mainForm.reset();
-      toast.success("Comment posted.");
+      toast.success(t("posted"));
     } catch {
-      toast.error("Could not post comment.");
+      toast.error(t("postError"));
     }
   });
 
   const onSubmitReply = replyForm.handleSubmit(async (data) => {
     if (!user?.uid || !replyingTo) {
-      toast.error("Sign in to reply.");
+      toast.error(t("signInToReply"));
       return;
     }
     try {
       await addComment({
         postId,
         userId: user.uid,
-        userName: user.displayName || user.email || "Member",
+        userName: user.displayName || user.email || tCommon("member"),
         userPhotoURL: user.photoURL || undefined,
         content: data.content.trim(),
         parentId: replyingTo,
       });
       replyForm.reset();
       setReplyingTo(null);
-      toast.success("Reply posted.");
+      toast.success(t("replyPosted"));
     } catch {
-      toast.error("Could not post reply.");
+      toast.error(t("replyError"));
     }
   });
 
@@ -234,17 +238,17 @@ export function CommentSection({ postId }: CommentSectionProps) {
       <div className="flex items-center gap-2">
         <MessageCircle className="size-5 text-primary" aria-hidden />
         <h2 id="comments-heading" className="font-heading text-xl font-semibold">
-          Comments
+          {t("title")}
         </h2>
         <span className="text-sm text-muted-foreground">({comments.length})</span>
       </div>
 
       {isAuthenticated ? (
         <form onSubmit={onSubmitMain} className="space-y-3">
-          <Label htmlFor="new-comment">Add a comment</Label>
+          <Label htmlFor="new-comment">{t("addLabel")}</Label>
           <Textarea
             id="new-comment"
-            placeholder="Share your thoughts…"
+            placeholder={t("placeholder")}
             rows={4}
             className="resize-none"
             {...mainForm.register("content")}
@@ -255,19 +259,19 @@ export function CommentSection({ postId }: CommentSectionProps) {
             </p>
           )}
           <Button type="submit" disabled={mainForm.formState.isSubmitting}>
-            {mainForm.formState.isSubmitting ? "Posting…" : "Post comment"}
+            {mainForm.formState.isSubmitting ? t("posting") : t("postComment")}
           </Button>
         </form>
       ) : (
         <p className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-          Sign in to join the conversation.
+          {t("signInPrompt")}
         </p>
       )}
 
       <Separator />
 
       {roots.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No comments yet. Be the first to share.</p>
+        <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
         <ul className="space-y-4">
           {roots.map((root) => (

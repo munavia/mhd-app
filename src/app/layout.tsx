@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { AuthProvider } from "@/components/providers/AuthProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,17 +38,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans min-h-screen flex flex-col antialiased`}>
-        <ThemeProvider>
-          <QueryProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                {children}
-                <Toaster position="top-right" richColors closeButton />
-              </TooltipProvider>
-            </AuthProvider>
-          </QueryProvider>
-        </ThemeProvider>
+      <body
+        className={`${inter.variable} font-sans min-h-screen flex flex-col antialiased`}
+      >
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

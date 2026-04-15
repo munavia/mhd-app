@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   authMiddleware,
-  redirectToLogin,
-  redirectToHome,
 } from "next-firebase-auth-edge";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
+
+const intlMiddleware = createIntlMiddleware(routing);
+
+const LOCALES_RE = /^\/(pt|es)(\/|$)/;
+
+function stripLocale(pathname: string): string {
+  return pathname.replace(LOCALES_RE, "/") || "/";
+}
+
+function getLocalePrefix(pathname: string): string {
+  const m = pathname.match(LOCALES_RE);
+  return m ? `/${m[1]}` : "";
+}
 
 const PUBLIC_PATHS = [
   "/",
@@ -29,6 +42,15 @@ function isPublicPath(pathname: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/_next/") || pathname.includes(".")) {
+    return NextResponse.next();
+  }
+
+  const bare = stripLocale(pathname);
+  const localePrefix = getLocalePrefix(pathname);
+
   return authMiddleware(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
@@ -54,37 +76,35 @@ export async function middleware(request: NextRequest) {
       ),
     },
     handleValidToken: async ({ decodedToken }, headers) => {
-      const pathname = request.nextUrl.pathname;
-
-      if (pathname === "/login" || pathname === "/signup") {
-        return redirectToHome(request);
+      if (bare === "/login" || bare === "/signup") {
+        return NextResponse.redirect(
+          new URL(`${localePrefix}/`, request.url)
+        );
       }
 
-      return NextResponse.next({ request: { headers } });
+      const intlResponse = intlMiddleware(request);
+      for (const [key, value] of headers.entries()) {
+        intlResponse.headers.set(key, value);
+      }
+      return intlResponse;
     },
     handleInvalidToken: async (_reason) => {
-      const pathname = request.nextUrl.pathname;
-
-      if (isPublicPath(pathname)) {
-        return NextResponse.next();
+      if (isPublicPath(bare)) {
+        return intlMiddleware(request);
       }
 
-      return redirectToLogin(request, {
-        path: "/login",
-        publicPaths: PUBLIC_PATHS,
-      });
+      return NextResponse.redirect(
+        new URL(`${localePrefix}/login`, request.url)
+      );
     },
     handleError: async (_error) => {
-      const pathname = request.nextUrl.pathname;
-
-      if (isPublicPath(pathname)) {
-        return NextResponse.next();
+      if (isPublicPath(bare)) {
+        return intlMiddleware(request);
       }
 
-      return redirectToLogin(request, {
-        path: "/login",
-        publicPaths: PUBLIC_PATHS,
-      });
+      return NextResponse.redirect(
+        new URL(`${localePrefix}/login`, request.url)
+      );
     },
   });
 }

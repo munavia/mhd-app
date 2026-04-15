@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -26,18 +26,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "@/lib/auth";
 import { getInitials } from "@/lib/utils";
 import { toast } from "sonner";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
-  { label: "Events", href: "/events" },
-  { label: "Give", href: "/give" },
-  { label: "Contact", href: "/contact" },
+  { navKey: "home" as const, href: "/" },
+  { navKey: "about" as const, href: "/about" },
+  { navKey: "blog" as const, href: "/blog" },
+  { navKey: "events" as const, href: "/events" },
+  { navKey: "give" as const, href: "/give" },
+  { navKey: "contact" as const, href: "/contact" },
 ];
 
 export function Navbar() {
@@ -45,6 +47,7 @@ export function Navbar() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { user, isAuthenticated } = useAuth();
+  const t = useTranslations("Nav");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -79,7 +82,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 group">
           <Church className="h-7 w-7 text-primary transition-transform group-hover:scale-110" />
           <span className="font-bold text-lg hidden sm:inline-block">
-            MHD Ministry
+            {t("brand")}
           </span>
         </Link>
 
@@ -94,7 +97,7 @@ export function Navbar() {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              {link.label}
+              {t(link.navKey)}
             </Link>
           ))}
         </div>
@@ -104,7 +107,7 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
+            aria-label={t("toggleTheme")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -135,7 +138,7 @@ export function Navbar() {
                   onClick={() => router.push("/dashboard")}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
+                  {t("dashboard")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -143,7 +146,7 @@ export function Navbar() {
                   className="cursor-pointer text-destructive"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  {t("signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -153,16 +156,18 @@ export function Navbar() {
                 href="/login"
                 className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
               >
-                Sign in
+                {t("signIn")}
               </Link>
               <Link
                 href="/signup"
                 className={cn(buttonVariants({ size: "sm" }))}
               >
-                Get started
+                {t("getStarted")}
               </Link>
             </div>
           )}
+
+          <LanguageSwitcher className="shrink-0" />
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
@@ -170,12 +175,12 @@ export function Navbar() {
                 buttonVariants({ variant: "ghost", size: "icon" }),
                 "lg:hidden"
               )}
-              aria-label="Open menu"
+              aria-label={t("openMenu")}
             >
               <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <SheetTitle className="sr-only">{t("navMenu")}</SheetTitle>
               <div className="flex flex-col gap-4 mt-8">
                 {NAV_LINKS.map((link) => (
                   <Link
@@ -188,7 +193,7 @@ export function Navbar() {
                         : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    {link.label}
+                    {t(link.navKey)}
                   </Link>
                 ))}
                 <div className="border-t pt-4 mt-2">
@@ -200,7 +205,7 @@ export function Navbar() {
                         className="flex items-center gap-2 px-3 py-2 text-base font-medium text-muted-foreground hover:text-foreground"
                       >
                         <LayoutDashboard className="h-4 w-4" />
-                        Dashboard
+                        {t("dashboard")}
                       </Link>
                       <button
                         onClick={() => {
@@ -210,7 +215,7 @@ export function Navbar() {
                         className="flex items-center gap-2 px-3 py-2 text-base font-medium text-destructive w-full text-left"
                       >
                         <LogOut className="h-4 w-4" />
-                        Sign out
+                        {t("signOut")}
                       </button>
                     </>
                   ) : (
@@ -221,14 +226,14 @@ export function Navbar() {
                         className="flex items-center gap-2 px-3 py-2 text-base font-medium text-muted-foreground hover:text-foreground"
                       >
                         <LogIn className="h-4 w-4" />
-                        Sign in
+                        {t("signIn")}
                       </Link>
                       <Link
                         href="/signup"
                         onClick={() => setMobileOpen(false)}
                         className={cn(buttonVariants(), "mt-2 w-full justify-center")}
                       >
-                        Get started
+                        {t("getStarted")}
                       </Link>
                     </>
                   )}
