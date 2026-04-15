@@ -7,15 +7,20 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const LOCALES_RE = /^\/(pt|es)(\/|$)/;
+/** Match first path segment when it is a locale (including `en` — next-intl may use /en/... before rewrite). */
+const LOCALE_SEGMENT_RE = /^\/(en|pt|es)(\/|$)/;
 
 function stripLocale(pathname: string): string {
-  return pathname.replace(LOCALES_RE, "/") || "/";
+  const next = pathname.replace(LOCALE_SEGMENT_RE, "/");
+  return next === "" ? "/" : next;
 }
 
+/** Prefix for redirects: default locale `en` uses no prefix (`localePrefix: 'as-needed'`). */
 function getLocalePrefix(pathname: string): string {
-  const m = pathname.match(LOCALES_RE);
-  return m ? `/${m[1]}` : "";
+  const m = pathname.match(/^\/(en|pt|es)(?=\/|$)/);
+  if (!m) return "";
+  if (m[1] === "en") return "";
+  return `/${m[1]}`;
 }
 
 const PUBLIC_PATHS = [
