@@ -29,7 +29,14 @@
   "Events": {
     "title": "Próximamente eventos",
     "description": "Estamos preparando eventos y talleres transformadores para profundizar tu conexión con lo divino. ¡Mantente atento!",
-    "visitBlog": "Visita nuestro blog"
+    "visitBlog": "Visita nuestro blog",
+    "programsTitle": "Programas y transmisiones",
+    "programsSubtitle": "Elige un programa para ver horarios, dónde verlo y cómo contactarnos para oración.",
+    "schedule": "Horario",
+    "host": "Anfitriona",
+    "whereToWatch": "Dónde verlo",
+    "contact": "Oración y consejería",
+    "openDetails": "Abrir detalles: {title}"
   },
   "Blog": {
     "title": "Blog",

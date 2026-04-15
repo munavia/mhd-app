@@ -29,7 +29,14 @@
   "Events": {
     "title": "Events Coming Soon",
     "description": "We're preparing transformative events and workshops designed to deepen your connection with the divine. Stay tuned!",
-    "visitBlog": "Visit Our Blog"
+    "visitBlog": "Visit Our Blog",
+    "programsTitle": "Programs & livestreams",
+    "programsSubtitle": "Choose a program below for schedule details, where to watch, and how to reach us for prayer.",
+    "schedule": "Schedule",
+    "host": "Host",
+    "whereToWatch": "Where to watch",
+    "contact": "Prayer & counseling",
+    "openDetails": "Open details for {title}"
   },
   "Blog": {
     "title": "Blog",

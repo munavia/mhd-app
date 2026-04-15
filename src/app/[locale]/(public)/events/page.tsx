@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ProgramsLivestreamsSection } from "@/components/events/ProgramsLivestreamsSection";
 
 export default function EventsPage() {
   const t = useTranslations("Events");
@@ -22,29 +23,36 @@ export default function EventsPage() {
     <>
       <Navbar />
       <main className="flex-1 pt-16">
-        <section className="min-h-[70vh] flex items-center justify-center bg-gradient-to-b from-primary/12 via-background to-muted/30 py-16">
+        <section className="bg-gradient-to-b from-primary/12 via-background to-muted/30 py-16">
           <div className="container mx-auto px-4">
-            <Card className="mx-auto max-w-lg border-border/60 bg-card/90 text-center shadow-lg backdrop-blur-sm">
-              <CardHeader className="pb-2">
-                <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
-                  <Calendar className="size-8" aria-hidden />
-                </div>
-                <CardTitle className="font-heading text-3xl md:text-4xl">
-                  {t("title")}
-                </CardTitle>
-                <CardDescription className="text-base leading-relaxed pt-2">
-                  {t("description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pb-10 pt-2">
-                <Link
-                  href="/blog"
-                  className={cn(buttonVariants({ size: "lg" }), "gap-2 inline-flex")}
-                >
-                  {t("visitBlog")}
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="mx-auto max-w-3xl text-center">
+              <Card className="border-border/60 bg-card/90 shadow-lg backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
+                    <Calendar className="size-8" aria-hidden />
+                  </div>
+                  <CardTitle className="font-heading text-3xl md:text-4xl">
+                    {t("title")}
+                  </CardTitle>
+                  <CardDescription className="text-base leading-relaxed pt-2">
+                    {t("description")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-10 pt-2">
+                  <Link
+                    href="/blog"
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "gap-2 inline-flex"
+                    )}
+                  >
+                    {t("visitBlog")}
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+
+            <ProgramsLivestreamsSection className="mt-16" />
           </div>
         </section>
       </main>

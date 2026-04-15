@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionWrapper } from "@/components/shared/SectionWrapper";
+import { ProgramsLivestreamsSection } from "@/components/events/ProgramsLivestreamsSection";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -241,6 +242,15 @@ export default function HomePage() {
                 </CardContent>
               </Card>
             </motion.div>
+          </div>
+        </SectionWrapper>
+
+        <SectionWrapper
+          id="programs"
+          className="border-t border-border/40 bg-gradient-to-b from-primary/10 via-background to-muted/20"
+        >
+          <div className="container mx-auto px-4">
+            <ProgramsLivestreamsSection />
           </div>
         </SectionWrapper>
       </main>
