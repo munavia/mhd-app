@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import {
-  Church,
   LayoutDashboard,
   FileText,
   MessageSquare,
@@ -175,12 +174,15 @@ export default function DashboardLayout({
       <Link
         href="/"
         className={cn(
-          "flex items-center gap-2 border-b border-border px-3 py-4 transition-colors hover:bg-muted/50",
-          opts.collapsed && "flex-col px-2"
+          "flex items-center border-b border-border px-3 py-4 transition-colors hover:bg-muted/50",
+          opts.collapsed ? "flex-col justify-center px-2" : "gap-0"
         )}
       >
-        <Church className="size-8 shrink-0 text-primary" aria-hidden />
-        {!opts.collapsed && (
+        {opts.collapsed ? (
+          <span className="font-heading text-[10px] font-bold uppercase leading-tight text-primary">
+            MHD
+          </span>
+        ) : (
           <div className="min-w-0 flex-1">
             <p className="font-heading text-sm font-semibold leading-tight">
               {t("mhdDashboard")}

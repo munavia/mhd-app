@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { Church, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SocialLinks } from "@/components/social/SocialLinks";
 
@@ -41,9 +41,11 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <Church className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg">{tNav("brand")}</span>
+            <Link
+              href="/"
+              className="mb-4 inline-block font-heading text-base font-bold leading-snug text-foreground transition-colors hover:text-primary sm:text-lg"
+            >
+              {tNav("brand")}
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("tagline")}

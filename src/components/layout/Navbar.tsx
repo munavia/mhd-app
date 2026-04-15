@@ -13,7 +13,6 @@ import {
   LogIn,
   LogOut,
   LayoutDashboard,
-  Church,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -79,9 +78,11 @@ export function Navbar() {
       }`}
     >
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Church className="h-7 w-7 text-primary transition-transform group-hover:scale-110" />
-          <span className="font-bold text-lg hidden sm:inline-block">
+        <Link
+          href="/"
+          className="group min-w-0 shrink font-heading text-sm font-bold leading-snug tracking-tight text-foreground transition-colors hover:text-primary md:text-base"
+        >
+          <span className="inline-block max-w-[min(100vw-5rem,18rem)] sm:max-w-[22rem] lg:max-w-[28rem]">
             {t("brand")}
           </span>
         </Link>
