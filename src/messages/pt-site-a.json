@@ -28,7 +28,10 @@
     "ctaGiveLabel": "Contribua hoje",
     "finalTitle": "Acenda a sua chama espiritual",
     "finalBody": "Está pronto para acender a chama na sua alma? Entre no Ministry of Healing and Deliverance – um espaço sagrado onde acontecem milagres, os corações são curados e os espíritos são libertos.",
-    "finalCta": "Comece a sua jornada"
+    "finalCta": "Comece a sua jornada",
+    "sermonsTitle": "Os nossos sermões",
+    "sermonsSubtitle": "Veja mensagens e ensino recentes dos nossos cultos—clique num vídeo para reproduzir.",
+    "openSermon": "Reproduzir sermão: {title}"
   },
   "About": {
     "title": "Sobre o ministério",

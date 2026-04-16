@@ -27,9 +27,14 @@
     "seedNote": "Cada dólar que aportas es una semilla sembrada en la tierra fértil de la transformación espiritual..."
   },
   "Events": {
-    "title": "Próximamente eventos",
-    "description": "Estamos preparando eventos y talleres transformadores para profundizar tu conexión con lo divino. ¡Mantente atento!",
+    "title": "Próximos eventos",
+    "description": "Únete a nosotros en encuentros, enseñanza y momentos especiales. Toca un evento para ver todos los detalles.",
     "visitBlog": "Visita nuestro blog",
+    "noEvents": "Aún no hay eventos listados. Vuelve pronto.",
+    "openEvent": "Abrir evento: {title}",
+    "eventWhen": "Fecha y hora",
+    "hostsLabel": "Anfitrión(es)",
+    "locationLabel": "Lugar",
     "programsTitle": "Programas y transmisiones",
     "programsSubtitle": "Elige un programa para ver horarios, dónde verlo y cómo contactarnos para oración.",
     "schedule": "Horario",

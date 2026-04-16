@@ -28,7 +28,10 @@
     "ctaGiveLabel": "Give Today",
     "finalTitle": "Ignite Your Spiritual Flame",
     "finalBody": "Are you ready to ignite the flame within your soul? Step into the Ministry of Healing and Deliverance – a sacred space where miracles happen, hearts are healed, and spirits are set free.",
-    "finalCta": "Begin Your Journey"
+    "finalCta": "Begin Your Journey",
+    "sermonsTitle": "Our Sermons",
+    "sermonsSubtitle": "Watch recent messages and teaching from our services—click a video to play.",
+    "openSermon": "Play sermon: {title}"
   },
   "About": {
     "title": "About the Ministry",

@@ -28,7 +28,10 @@
     "ctaGiveLabel": "Donar hoy",
     "finalTitle": "Enciende tu llama espiritual",
     "finalBody": "¿Estás listo para encender la llama en tu alma? Entra en el Ministry of Healing and Deliverance: un espacio sagrado donde suceden milagros, se sanan corazones y se liberan espíritus.",
-    "finalCta": "Comienza tu camino"
+    "finalCta": "Comienza tu camino",
+    "sermonsTitle": "Nuestros sermones",
+    "sermonsSubtitle": "Mira mensajes y enseñanzas recientes de nuestros servicios: haz clic en un video para reproducirlo.",
+    "openSermon": "Reproducir sermón: {title}"
   },
   "About": {
     "title": "Acerca del ministerio",

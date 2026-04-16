@@ -14,6 +14,9 @@ const ADMIN_PERMISSIONS: Action[] = [
   "prayer:manage",
   "contact:manage",
   "settings:manage",
+  "sermon:manage",
+  "program:manage",
+  "upcomingEvent:manage",
 ];
 
 const ROLE_PERMISSIONS: Record<Role, Action[]> = {
@@ -26,6 +29,8 @@ const ROLE_PERMISSIONS: Record<Role, Action[]> = {
     "comment:create",
     "comment:delete_own",
     "comment:moderate",
+    "sermon:manage",
+    "program:manage",
   ],
   /** Same as admin except cannot assign or change roles (no `user:manage`). */
   contributor: ADMIN_PERMISSIONS.filter((a) => a !== "user:manage"),
@@ -44,7 +49,10 @@ export type DashboardNavKey =
   | "prayerRequests"
   | "messages"
   | "users"
-  | "settings";
+  | "settings"
+  | "sermons"
+  | "programs"
+  | "upcomingEvents";
 
 export function getDashboardNavItems(role: Role): {
   navKey: DashboardNavKey;
@@ -61,6 +69,30 @@ export function getDashboardNavItems(role: Role): {
 
   if (hasPermission(role, "post:create")) {
     items.push({ navKey: "posts", href: "/dashboard/posts", icon: "FileText" });
+  }
+
+  if (hasPermission(role, "sermon:manage")) {
+    items.push({
+      navKey: "sermons",
+      href: "/dashboard/sermons",
+      icon: "Video",
+    });
+  }
+
+  if (hasPermission(role, "program:manage")) {
+    items.push({
+      navKey: "programs",
+      href: "/dashboard/programs",
+      icon: "Clapperboard",
+    });
+  }
+
+  if (hasPermission(role, "upcomingEvent:manage")) {
+    items.push({
+      navKey: "upcomingEvents",
+      href: "/dashboard/upcoming-events",
+      icon: "CalendarDays",
+    });
   }
 
   if (hasPermission(role, "comment:moderate")) {

@@ -27,9 +27,14 @@
     "seedNote": "Every dollar you contribute is a seed sown into the fertile ground of spiritual transformation..."
   },
   "Events": {
-    "title": "Events Coming Soon",
-    "description": "We're preparing transformative events and workshops designed to deepen your connection with the divine. Stay tuned!",
+    "title": "Upcoming Events",
+    "description": "Join us for gatherings, teaching, and special moments together. Tap an event for full details.",
     "visitBlog": "Visit Our Blog",
+    "noEvents": "No upcoming events are listed yet. Please check back soon.",
+    "openEvent": "Open event: {title}",
+    "eventWhen": "Date & time",
+    "hostsLabel": "Host(s)",
+    "locationLabel": "Location",
     "programsTitle": "Programs & livestreams",
     "programsSubtitle": "Choose a program below for schedule details, where to watch, and how to reach us for prayer.",
     "schedule": "Schedule",

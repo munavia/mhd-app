@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionWrapper } from "@/components/shared/SectionWrapper";
 import { ProgramsLivestreamsSection } from "@/components/events/ProgramsLivestreamsSection";
+import { SermonsSection } from "@/components/sermons/SermonsSection";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
@@ -210,6 +211,8 @@ export default function HomePage() {
             </motion.div>
           </div>
         </SectionWrapper>
+
+        <SermonsSection />
 
         <SectionWrapper className="pb-24 md:pb-32">
           <div className="container mx-auto px-4">

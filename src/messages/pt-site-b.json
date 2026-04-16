@@ -27,9 +27,14 @@
     "seedNote": "Cada dólar que contribui é uma semente lançada na terra fértil da transformação espiritual..."
   },
   "Events": {
-    "title": "Eventos em breve",
-    "description": "Estamos a preparar eventos e workshops transformadores para aprofundar a sua ligação com o divino. Fique atento!",
+    "title": "Próximos eventos",
+    "description": "Junte-se a nós em encontros, ensino e momentos especiais. Toque num evento para ver todos os detalhes.",
     "visitBlog": "Visite o nosso blog",
+    "noEvents": "Ainda não há eventos listados. Volte em breve.",
+    "openEvent": "Abrir evento: {title}",
+    "eventWhen": "Data e hora",
+    "hostsLabel": "Anfitrião(ões)",
+    "locationLabel": "Local",
     "programsTitle": "Programas e transmissões",
     "programsSubtitle": "Toque num cartão para ver horários, onde assistir e como nos contactar para oração.",
     "schedule": "Horário",

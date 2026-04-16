@@ -20,6 +20,9 @@ import {
   PanelLeft,
   Sun,
   Moon,
+  Video,
+  Clapperboard,
+  CalendarDays,
 } from "lucide-react";
 import { toast } from "sonner";
 import { buttonVariants } from "@/components/ui/button";
@@ -48,6 +51,9 @@ const ICON_MAP = {
   Mail,
   Users,
   Settings,
+  Video,
+  Clapperboard,
+  CalendarDays,
 } as const;
 
 function NavLinks({

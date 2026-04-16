@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
@@ -10,21 +10,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import {
-  MINISTRY_EVENTS,
-  type MinistryEvent,
-} from "@/data/ministry-events";
+import { listProgramsOrdered } from "@/services/programService";
+import type { Program } from "@/types";
 
 type ProgramsLivestreamsSectionProps = {
   className?: string;
 };
 
+function externalUrl(href: string): string {
+  const t = href.trim();
+  if (!t) return "";
+  if (/^https?:\/\//i.test(t)) return t;
+  return `https://${t}`;
+}
+
 export function ProgramsLivestreamsSection({
   className,
 }: ProgramsLivestreamsSectionProps) {
   const t = useTranslations("Events");
-  const [selected, setSelected] = useState<MinistryEvent | null>(null);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Program | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await listProgramsOrdered();
+      setPrograms(data);
+    } catch {
+      setPrograms([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (!loading && programs.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -36,40 +64,56 @@ export function ProgramsLivestreamsSection({
           {t("programsSubtitle")}
         </p>
 
-        <ul className="mt-10 grid list-none gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {MINISTRY_EVENTS.map((event) => (
-            <li key={event.id}>
-              <button
-                type="button"
-                onClick={() => setSelected(event)}
-                className={cn(
-                  "group w-full overflow-hidden rounded-2xl border border-border/60 bg-card text-left shadow-sm",
-                  "ring-offset-background transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                )}
-                aria-label={t("openDetails", { title: event.title })}
-              >
-                <div className="relative aspect-square w-full overflow-hidden bg-muted/40">
-                  <Image
-                    src={event.image}
-                    alt={event.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 34vw"
-                    className="object-contain object-center transition duration-300 group-hover:scale-[1.02]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-4 pt-12">
-                    <p className="font-heading text-lg font-semibold leading-snug text-foreground">
-                      {event.title}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {event.scheduleShort}
-                    </p>
+        {loading ? (
+          <ul className="mt-10 grid list-none gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <li key={i}>
+                <Skeleton className="aspect-square w-full rounded-2xl" />
+                <Skeleton className="mt-3 h-6 w-4/5" />
+                <Skeleton className="mt-2 h-4 w-1/2" />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="mt-10 grid list-none gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {programs.map((event, index) => (
+              <li key={event.id}>
+                <button
+                  type="button"
+                  onClick={() => setSelected(event)}
+                  className={cn(
+                    "group w-full overflow-hidden rounded-2xl border border-border/60 bg-card text-left shadow-sm",
+                    "ring-offset-background transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  )}
+                  aria-label={t("openDetails", { title: event.title })}
+                >
+                  <div className="relative aspect-square w-full overflow-hidden bg-muted/40">
+                    {event.imageUrl ? (
+                      <Image
+                        src={event.imageUrl}
+                        alt={event.title}
+                        fill
+                        unoptimized
+                        priority={index === 0}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 34vw"
+                        className="object-contain object-center transition duration-300 group-hover:scale-[1.02]"
+                      />
+                    ) : null}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 pt-12">
+                      <p className="font-heading text-lg font-semibold leading-snug text-foreground">
+                        {event.title}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {event.scheduleShort}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <Dialog
@@ -86,13 +130,16 @@ export function ProgramsLivestreamsSection({
             <>
               <DialogHeader>
                 <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg border border-border/60 bg-muted/40">
-                  <Image
-                    src={selected.image}
-                    alt={selected.title}
-                    fill
-                    className="object-contain object-center"
-                    sizes="(max-width: 1024px) 100vw, 896px"
-                  />
+                  {selected.imageUrl ? (
+                    <Image
+                      src={selected.imageUrl}
+                      alt={selected.title}
+                      fill
+                      unoptimized
+                      className="object-contain object-center"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                    />
+                  ) : null}
                 </div>
                 <DialogTitle className="text-center text-xl sm:text-2xl">
                   {selected.title}
@@ -139,7 +186,7 @@ export function ProgramsLivestreamsSection({
                       ) : null}
                       {selected.website ? (
                         <a
-                          href={selected.website}
+                          href={externalUrl(selected.website)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block break-all font-medium text-primary underline underline-offset-4 hover:text-primary/90"

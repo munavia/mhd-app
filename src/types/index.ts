@@ -93,4 +93,48 @@ export type Action =
   | "user:manage"
   | "prayer:manage"
   | "contact:manage"
-  | "settings:manage";
+  | "settings:manage"
+  | "sermon:manage"
+  | "program:manage"
+  | "upcomingEvent:manage";
+
+export interface Sermon {
+  id: string;
+  title: string;
+  speaker: string;
+  youtubeUrl: string;
+  videoId: string;
+  thumbnailUrl?: string;
+  sortOrder: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface Program {
+  id: string;
+  title: string;
+  description: string;
+  scheduleShort: string;
+  schedule: string;
+  host: string;
+  platforms: string[];
+  contactPhone?: string;
+  website?: string;
+  imageUrl: string;
+  sortOrder: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface UpcomingEvent {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  startsAt: Timestamp;
+  host?: string;
+  location?: string;
+  sortOrder: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}

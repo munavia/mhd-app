@@ -80,5 +80,20 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if request.auth != null && isAdminOrContributor();
     }
+
+    match /sermons/{sermonId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && isStaffPostEditor();
+    }
+
+    match /programs/{programId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && isStaffPostEditor();
+    }
+
+    match /upcomingEvents/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && isStaffPostEditor();
+    }
   }
 }
