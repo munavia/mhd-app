@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import type { Role } from "@/types";
+import type { AccountStatus, Role } from "@/types";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -80,6 +80,7 @@ export async function signUp(name: string, email: string, password: string) {
     name,
     email,
     role: "user" as Role,
+    status: "active" as AccountStatus,
     photoURL: credential.user.photoURL || "",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -119,6 +120,7 @@ export async function signInWithGoogle() {
       name: credential.user.displayName || "User",
       email: credential.user.email,
       role: "user" as Role,
+      status: "active" as AccountStatus,
       photoURL: credential.user.photoURL || "",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -151,10 +153,23 @@ export async function resendVerificationEmail() {
   }
 }
 
-export async function getUserRole(uid: string): Promise<Role> {
+export async function getUserProfile(uid: string): Promise<{
+  role: Role;
+  status: AccountStatus;
+}> {
   const userDoc = await getDoc(doc(db, "users", uid));
   if (userDoc.exists()) {
-    return (userDoc.data().role as Role) || "user";
+    const data = userDoc.data();
+    const role = (data.role as Role) || "user";
+    const raw = data.status as AccountStatus | undefined;
+    const status: AccountStatus =
+      raw === "blocked" ? "blocked" : "active";
+    return { role, status };
   }
-  return "user";
+  return { role: "user", status: "active" };
+}
+
+export async function getUserRole(uid: string): Promise<Role> {
+  const { role } = await getUserProfile(uid);
+  return role;
 }

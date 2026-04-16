@@ -60,6 +60,7 @@
     "actions": "Actions",
     "categories": "Categories",
     "all": "All",
-    "member": "Member"
+    "member": "Member",
+    "accountBlocked": "Your account has been blocked. Contact the ministry if you think this is a mistake."
   }
 }

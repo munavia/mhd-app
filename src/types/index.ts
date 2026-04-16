@@ -2,6 +2,9 @@ import { Timestamp } from "firebase/firestore";
 
 export type Role = "admin" | "editor" | "contributor" | "user";
 
+/** Account access; default in app logic is `active` when missing (legacy users). */
+export type AccountStatus = "active" | "blocked";
+
 export type PostStatus = "draft" | "published";
 
 export interface User {
@@ -9,6 +12,8 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  /** When omitted, treat as `active`. */
+  status?: AccountStatus;
   photoURL?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

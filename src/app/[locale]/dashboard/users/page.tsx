@@ -24,10 +24,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate, getInitials } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllUsers, updateUserRole } from "@/services/userService";
-import type { Role, User } from "@/types";
+import { getAllUsers, updateUserRole, updateUserStatus } from "@/services/userService";
+import type { AccountStatus, Role, User } from "@/types";
 
 const ROLES: Role[] = ["admin", "editor", "contributor", "user"];
+const STATUSES: AccountStatus[] = ["active", "blocked"];
+
+function effectiveStatus(u: User): AccountStatus {
+  return u.status === "blocked" ? "blocked" : "active";
+}
 
 export default function DashboardUsersPage() {
   const t = useTranslations("Dashboard.usersAdmin");
@@ -54,7 +59,7 @@ export default function DashboardUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -81,6 +86,19 @@ export default function DashboardUsersPage() {
       );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : t("roleError"));
+    }
+  };
+
+  const handleStatusChange = async (target: User, status: AccountStatus) => {
+    if (authUser && target.id === authUser.uid) return;
+    try {
+      await updateUserStatus(target.id, status);
+      toast.success(t("statusUpdated"));
+      setUsers((prev) =>
+        prev.map((u) => (u.id === target.id ? { ...u, status } : u))
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : t("statusError"));
     }
   };
 
@@ -130,6 +148,7 @@ export default function DashboardUsersPage() {
                 <TableHead>{t("colName")}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t("colEmail")}</TableHead>
                 <TableHead>{t("colRole")}</TableHead>
+                <TableHead>{t("colStatus")}</TableHead>
                 <TableHead className="hidden md:table-cell">{t("colJoined")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -137,7 +156,7 @@ export default function DashboardUsersPage() {
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     className="py-10 text-center text-muted-foreground"
                   >
                     {t("empty")}
@@ -146,6 +165,7 @@ export default function DashboardUsersPage() {
               ) : (
                 filtered.map((u) => {
                   const isSelf = authUser?.uid === u.id;
+                  const st = effectiveStatus(u);
                   return (
                     <TableRow key={u.id}>
                       <TableCell>
@@ -179,6 +199,28 @@ export default function DashboardUsersPage() {
                             {ROLES.map((r) => (
                               <SelectItem key={r} value={r}>
                                 {r}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={st}
+                          disabled={isSelf}
+                          onValueChange={(v) =>
+                            void handleStatusChange(u, v as AccountStatus)
+                          }
+                        >
+                          <SelectTrigger className="w-[130px]" size="sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {STATUSES.map((s) => (
+                              <SelectItem key={s} value={s}>
+                                {s === "active"
+                                  ? t("statusActive")
+                                  : t("statusBlocked")}
                               </SelectItem>
                             ))}
                           </SelectContent>

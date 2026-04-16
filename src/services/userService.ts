@@ -9,7 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { Role, User } from "@/types";
+import type { AccountStatus, Role, User } from "@/types";
 
 const USERS_COLLECTION = "users";
 
@@ -34,6 +34,16 @@ export async function updateUserRole(
 ): Promise<void> {
   await updateDoc(doc(db, USERS_COLLECTION, userId), {
     role,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateUserStatus(
+  userId: string,
+  status: AccountStatus
+): Promise<void> {
+  await updateDoc(doc(db, USERS_COLLECTION, userId), {
+    status,
     updatedAt: serverTimestamp(),
   });
 }

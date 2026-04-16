@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Role } from "@/types";
+import type { AccountStatus, Role } from "@/types";
 
 interface AuthUser {
   uid: string;
@@ -11,9 +11,14 @@ interface AuthUser {
 interface AuthState {
   user: AuthUser | null;
   role: Role | null;
+  accountStatus: AccountStatus | null;
   loading: boolean;
   hydrated: boolean;
-  setUser: (user: AuthUser | null, role: Role | null) => void;
+  setUser: (
+    user: AuthUser | null,
+    role: Role | null,
+    accountStatus?: AccountStatus | null
+  ) => void;
   setLoading: (loading: boolean) => void;
   setHydrated: (hydrated: boolean) => void;
   clearUser: () => void;
@@ -22,10 +27,18 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   role: null,
+  accountStatus: null,
   loading: true,
   hydrated: false,
-  setUser: (user, role) => set({ user, role, loading: false }),
+  setUser: (user, role, accountStatus = null) =>
+    set({
+      user,
+      role,
+      accountStatus: user ? accountStatus ?? "active" : null,
+      loading: false,
+    }),
   setLoading: (loading) => set({ loading }),
   setHydrated: (hydrated) => set({ hydrated }),
-  clearUser: () => set({ user: null, role: null, loading: false }),
+  clearUser: () =>
+    set({ user: null, role: null, accountStatus: null, loading: false }),
 }));

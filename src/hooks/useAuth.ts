@@ -6,7 +6,7 @@ import { hasPermission } from "@/lib/permissions";
 import type { Action } from "@/types";
 
 export function useAuth() {
-  const { user, role, loading, hydrated } = useAuthStore();
+  const { user, role, accountStatus, loading, hydrated } = useAuthStore();
 
   const can = useCallback(
     (action: Action) => hasPermission(role ?? undefined, action),
@@ -16,6 +16,7 @@ export function useAuth() {
   return {
     user,
     role,
+    accountStatus,
     loading,
     hydrated,
     isAuthenticated: !!user,

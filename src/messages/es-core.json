@@ -60,6 +60,7 @@
     "actions": "Acciones",
     "categories": "Categorías",
     "all": "Todos",
-    "member": "Miembro"
+    "member": "Miembro",
+    "accountBlocked": "Tu cuenta ha sido bloqueada. Contacta al ministerio si crees que es un error."
   }
 }
