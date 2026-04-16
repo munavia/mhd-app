@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionWrapper } from "@/components/shared/SectionWrapper";
+import { FeatureCarousel } from "@/components/home/FeatureCarousel";
 import { ProgramsLivestreamsSection } from "@/components/events/ProgramsLivestreamsSection";
 import { SermonsSection } from "@/components/sermons/SermonsSection";
 import { Navbar } from "@/components/layout/Navbar";
@@ -147,32 +148,15 @@ export default function HomePage() {
         </section>
 
         <SectionWrapper className="bg-background">
-          <div className="container mx-auto px-4">
-            <motion.ul
-              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-              initial="hidden"
-              whileInView="visible"
+          <div className="container mx-auto max-w-6xl px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              variants={containerVariants}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
-              {featureCards.map(({ icon: Icon, titleKey, descKey }) => (
-                <motion.li key={titleKey} variants={itemVariants}>
-                  <Card className="h-full border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-shadow hover:shadow-md">
-                    <CardContent className="flex flex-col gap-4 pt-6">
-                      <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Icon className="size-6" aria-hidden />
-                      </div>
-                      <h3 className="text-lg font-bold text-foreground">
-                        {t(titleKey)}
-                      </h3>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {t(descKey)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.li>
-              ))}
-            </motion.ul>
+              <FeatureCarousel cards={featureCards} />
+            </motion.div>
           </div>
         </SectionWrapper>
 

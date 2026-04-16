@@ -31,7 +31,11 @@
     "finalCta": "Comece a sua jornada",
     "sermonsTitle": "Os nossos sermões",
     "sermonsSubtitle": "Veja mensagens e ensino recentes dos nossos cultos—clique num vídeo para reproduzir.",
-    "openSermon": "Reproduzir sermão: {title}"
+    "openSermon": "Reproduzir sermão: {title}",
+    "carouselPrev": "Diapositivo anterior",
+    "carouselNext": "Diapositivo seguinte",
+    "carouselDotsLabel": "Diapositivos de destaques",
+    "carouselSlide": "Ir para o diapositivo {current} de {total}"
   },
   "About": {
     "title": "Sobre o ministério",

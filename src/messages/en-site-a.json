@@ -31,7 +31,11 @@
     "finalCta": "Begin Your Journey",
     "sermonsTitle": "Our Sermons",
     "sermonsSubtitle": "Watch recent messages and teaching from our services—click a video to play.",
-    "openSermon": "Play sermon: {title}"
+    "openSermon": "Play sermon: {title}",
+    "carouselPrev": "Previous slide",
+    "carouselNext": "Next slide",
+    "carouselDotsLabel": "Feature slides",
+    "carouselSlide": "Go to slide {current} of {total}"
   },
   "About": {
     "title": "About the Ministry",

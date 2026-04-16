@@ -31,7 +31,11 @@
     "finalCta": "Comienza tu camino",
     "sermonsTitle": "Nuestros sermones",
     "sermonsSubtitle": "Mira mensajes y enseñanzas recientes de nuestros servicios: haz clic en un video para reproducirlo.",
-    "openSermon": "Reproducir sermón: {title}"
+    "openSermon": "Reproducir sermón: {title}",
+    "carouselPrev": "Diapositiva anterior",
+    "carouselNext": "Diapositiva siguiente",
+    "carouselDotsLabel": "Diapositivas de características",
+    "carouselSlide": "Ir a la diapositiva {current} de {total}"
   },
   "About": {
     "title": "Acerca del ministerio",
