@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import { LikeButton } from "@/components/blog/LikeButton";
 import { CommentSection } from "@/components/blog/CommentSection";
 import { buttonVariants } from "@/components/ui/button";
@@ -90,7 +91,7 @@ export default function BlogPostPage() {
         {loading ? (
           <div className="container mx-auto max-w-3xl px-4 py-12">
             <Skeleton className="mb-6 h-9 w-32" />
-            <Skeleton className="aspect-[21/9] w-full rounded-xl" />
+            <Skeleton className="h-52 w-full rounded-xl md:h-64" />
             <div className="mt-8 space-y-3">
               <Skeleton className="h-4 w-40" />
               <Skeleton className="h-12 w-full" />
@@ -115,68 +116,55 @@ export default function BlogPostPage() {
           </div>
         ) : (
           <article className="pb-20">
-            <div className="container mx-auto max-w-3xl px-4 py-8">
-              <Link
-                href="/blog"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "sm" }),
-                  "mb-6 -ml-2 gap-2 text-muted-foreground"
-                )}
-              >
-                <ArrowLeft className="size-4" aria-hidden />
-                {t("allPosts")}
-              </Link>
+            <PageHero
+              imageSrc={imageUrl || heroImages.blogPostFallback}
+            >
+              <div className="mx-auto max-w-3xl">
+                <Link
+                  href="/blog"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                    "mb-6 -ml-2 gap-2 text-foreground/78 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-50"
+                  )}
+                >
+                  <ArrowLeft className="size-4" aria-hidden />
+                  {t("allPosts")}
+                </Link>
 
-              <div className="relative -mx-4 mb-10 aspect-[21/9] overflow-hidden rounded-none bg-muted sm:mx-0 sm:rounded-xl">
-                {imageUrl ? (
-                  <Image
-                    src={imageUrl}
-                    alt={post.title}
-                    fill
-                    priority
-                    loading="eager"
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 672px"
-                  />
-                ) : (
-                  <div
-                    className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-muted"
-                    aria-hidden
-                  />
-                )}
-              </div>
-
-              {post.categories.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {post.categories.map((cat) => (
-                    <Badge key={cat} variant="secondary">
-                      {cat}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                {post.title}
-              </h1>
-
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3">
-                  <Avatar size="lg">
-                    <AvatarFallback>{getInitials(post.authorName)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium leading-none">{post.authorName}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {formatDate(displayDate)}
-                    </p>
+                {post.categories.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {post.categories.map((cat) => (
+                      <Badge key={cat} variant="secondary">
+                        {cat}
+                      </Badge>
+                    ))}
                   </div>
-                </div>
-                <LikeButton postId={post.id} initialLikesCount={post.likesCount ?? 0} />
-              </div>
+                )}
 
+                <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+                  {post.title}
+                </h1>
+
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3">
+                    <Avatar size="lg">
+                      <AvatarFallback>{getInitials(post.authorName)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium leading-none">{post.authorName}</p>
+                      <p className="mt-1 text-sm text-foreground/75 dark:text-zinc-300">
+                        {formatDate(displayDate)}
+                      </p>
+                    </div>
+                  </div>
+                  <LikeButton postId={post.id} initialLikesCount={post.likesCount ?? 0} />
+                </div>
+              </div>
+            </PageHero>
+
+            <div className="container mx-auto max-w-3xl px-4 py-10">
               <div
-                className={cn(BLOG_CONTENT_CLASS, "mt-10")}
+                className={cn(BLOG_CONTENT_CLASS)}
                 dangerouslySetInnerHTML={{ __html: safeHtml }}
               />
 

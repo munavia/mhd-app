@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { Target, Eye } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import { SectionWrapper } from "@/components/shared/SectionWrapper";
 import {
   Card,
@@ -20,19 +22,16 @@ export default function AboutPage() {
     <>
       <Navbar />
       <main className="flex-1 pt-16">
-        <section className="relative overflow-hidden border-b border-border/40 bg-gradient-to-b from-primary/10 via-background to-background">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,hsl(var(--primary)/0.12),transparent)]" />
-          <div className="container relative mx-auto px-4 py-16 md:py-24">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-                {t("title")}
-              </h1>
-              <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-                {t("subtitle")}
-              </p>
-            </div>
+        <PageHero imageSrc={heroImages.about}>
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+              {t("title")}
+            </h1>
+            <p className="mt-4 text-lg text-foreground/84 dark:text-zinc-200 md:text-xl">
+              {t("subtitle")}
+            </p>
           </div>
-        </section>
+        </PageHero>
 
         <SectionWrapper className="bg-background">
           <div className="container mx-auto px-4">

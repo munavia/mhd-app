@@ -12,6 +12,8 @@ import { prayerRequestSchema, type PrayerRequestFormData } from "@/lib/validatio
 import { submitPrayerRequest } from "@/services/prayerService";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,27 +75,24 @@ export default function PrayerRequestPage() {
     <>
       <Navbar />
       <main className="flex-1 pt-16">
-        <section className="relative overflow-hidden border-b border-border/40 bg-gradient-to-br from-rose-500/10 via-primary/8 to-background">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,hsl(var(--primary)/0.15),transparent)]" />
-          <div className="container relative mx-auto px-4 py-14 md:py-20">
-            <div className="mx-auto max-w-2xl text-center">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }}
-                className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/15 text-primary ring-4 ring-primary/10"
-              >
-                <Heart className="size-8 fill-primary/20" aria-hidden />
-              </motion.div>
-              <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
-                {t("title")}
-              </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
-                {t("subtitle")}
-              </p>
-            </div>
+        <PageHero imageSrc={heroImages.prayer}>
+          <div className="mx-auto max-w-2xl text-center">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }}
+              className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/15 text-primary ring-4 ring-primary/10"
+            >
+              <Heart className="size-8 fill-primary/20" aria-hidden />
+            </motion.div>
+            <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
+              {t("title")}
+            </h1>
+            <p className="mt-4 text-lg text-foreground/84 dark:text-zinc-200">
+              {t("subtitle")}
+            </p>
           </div>
-        </section>
+        </PageHero>
 
         <section className="py-14 md:py-20">
           <div className="container mx-auto px-4">

@@ -65,17 +65,15 @@ export function Navbar() {
     }
   };
 
-  const isHome = pathname === "/";
-
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled || !isHome
-          ? "bg-background/95 backdrop-blur-md shadow-sm border-b border-border"
-          : "bg-transparent"
-      }`}
+      className={cn(
+        "fixed left-0 right-0 top-0 z-50 border-b border-border/70 transition-[background-color,box-shadow,backdrop-filter] duration-300",
+        "bg-background/90 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/78",
+        scrolled && "shadow-md bg-background/95 supports-[backdrop-filter]:bg-background/88"
+      )}
     >
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link
@@ -92,10 +90,10 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 pathname === link.href
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "bg-primary/12 text-primary"
+                  : "text-foreground/82 hover:bg-muted/90 hover:text-foreground dark:text-zinc-200/90 dark:hover:text-zinc-50"
               }`}
             >
               {t(link.navKey)}
@@ -188,10 +186,10 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    className={`rounded-md px-3 py-2 text-base font-medium transition-colors ${
                       pathname === link.href
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        ? "bg-primary/12 text-primary"
+                        : "text-foreground/82 hover:bg-muted/90 hover:text-foreground dark:text-zinc-200/90 dark:hover:text-zinc-50"
                     }`}
                   >
                     {t(link.navKey)}

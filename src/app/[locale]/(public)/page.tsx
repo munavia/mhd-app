@@ -12,6 +12,8 @@ import { ProgramsLivestreamsSection } from "@/components/events/ProgramsLivestre
 import { SermonsSection } from "@/components/sermons/SermonsSection";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import {
   Sparkles,
   Leaf,
@@ -91,9 +93,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <main className="flex-1">
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background pt-16">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.15),transparent)]" />
-          <div className="container relative z-10 mx-auto px-4 py-20 md:py-28">
+        <PageHero imageSrc={heroImages.home} size="full">
             <motion.div
               className="mx-auto max-w-3xl text-center"
               variants={containerVariants}
@@ -108,13 +108,13 @@ export default function HomePage() {
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="mt-4 text-lg font-medium text-primary md:text-xl"
+                className="mt-4 text-lg font-medium text-primary [text-shadow:0_1px_10px_rgba(0,0,0,0.35)] dark:text-violet-200 dark:[text-shadow:0_2px_14px_rgba(0,0,0,0.5)] md:text-xl"
               >
                 {t("heroSubtitle")}
               </motion.p>
               <motion.p
                 variants={itemVariants}
-                className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl"
+                className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-foreground/86 dark:text-zinc-200 md:text-xl"
               >
                 {t("heroBody")}
               </motion.p>
@@ -144,8 +144,7 @@ export default function HomePage() {
                 </Button>
               </motion.div>
             </motion.div>
-          </div>
-        </section>
+        </PageHero>
 
         <SectionWrapper className="bg-background">
           <div className="container mx-auto max-w-6xl px-4">

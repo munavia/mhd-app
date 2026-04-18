@@ -5,7 +5,6 @@ import { Toaster } from "sonner";
 import { DocumentLang } from "@/components/providers/DocumentLang";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
-import { TopLoader } from "@/components/providers/TopLoader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 
@@ -29,7 +28,6 @@ export default async function LocaleLayout({ children, params }: Props) {
       <QueryProvider>
         <AuthProvider>
           <TooltipProvider>
-            <TopLoader />
             {children}
             <Toaster position="top-right" richColors closeButton />
           </TooltipProvider>

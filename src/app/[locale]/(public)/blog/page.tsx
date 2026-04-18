@@ -7,6 +7,8 @@ import { BookOpen, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import { PostCard } from "@/components/blog/PostCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,21 +128,19 @@ export default function BlogPage() {
     <>
       <Navbar />
       <main className="flex-1 pt-16">
-        <section className="border-b border-border/40 bg-gradient-to-b from-primary/10 via-background to-background">
-          <div className="container mx-auto px-4 py-14 md:py-20">
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
-                <BookOpen className="size-8" aria-hidden />
-              </div>
-              <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
-                {t("title")}
-              </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
-                {t("subtitle")}
-              </p>
+        <PageHero imageSrc={heroImages.blog}>
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <BookOpen className="size-8" aria-hidden />
             </div>
+            <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
+              {t("title")}
+            </h1>
+            <p className="mt-4 text-lg text-foreground/84 dark:text-zinc-200">
+              {t("subtitle")}
+            </p>
           </div>
-        </section>
+        </PageHero>
 
         <section className="container mx-auto px-4 py-12 md:py-16">
           <div className="mx-auto mb-10 flex max-w-2xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -10,6 +10,8 @@ import { submitContactMessage } from "@/services/contactService";
 import { MINISTRY_CONTACT } from "@/lib/ministryContact";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PageHero } from "@/components/layout/PageHero";
+import { heroImages } from "@/lib/heroImages";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,18 +55,16 @@ export default function ContactPage() {
     <>
       <Navbar />
       <main className="flex-1 pt-16">
-        <section className="border-b border-border/40 bg-gradient-to-b from-primary/10 via-background to-background">
-          <div className="container mx-auto px-4 py-14 md:py-20">
-            <div className="mx-auto max-w-2xl text-center">
-              <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
-                {t("pageTitle")}
-              </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
-                {t("pageSubtitle")}
-              </p>
-            </div>
+        <PageHero imageSrc={heroImages.contact}>
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="font-heading text-4xl font-bold tracking-tight md:text-5xl">
+              {t("pageTitle")}
+            </h1>
+            <p className="mt-4 text-lg text-foreground/84 dark:text-zinc-200">
+              {t("pageSubtitle")}
+            </p>
           </div>
-        </section>
+        </PageHero>
 
         <section className="py-14 md:py-20">
           <div className="container mx-auto px-4">
