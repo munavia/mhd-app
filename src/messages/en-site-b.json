@@ -59,7 +59,13 @@
     "backToBlog": "Back to blog",
     "allPosts": "All posts",
     "signInToLike": "Sign in to like posts.",
-    "likeError": "Could not update like. Try again."
+    "likeError": "Could not update like. Try again.",
+    "shareGroup": "Share this post",
+    "shareWhatsApp": "Share on WhatsApp",
+    "shareFacebook": "Share on Facebook",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied to clipboard.",
+    "copyFailed": "Could not copy link."
   },
   "Contact": {
     "pageTitle": "Contact Us",

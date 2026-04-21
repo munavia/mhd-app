@@ -59,7 +59,13 @@
     "backToBlog": "Volver al blog",
     "allPosts": "Todas las publicaciones",
     "signInToLike": "Inicia sesión para dar me gusta a las publicaciones.",
-    "likeError": "No se pudo actualizar el me gusta. Inténtalo de nuevo."
+    "likeError": "No se pudo actualizar el me gusta. Inténtalo de nuevo.",
+    "shareGroup": "Compartir esta publicación",
+    "shareWhatsApp": "Compartir en WhatsApp",
+    "shareFacebook": "Compartir en Facebook",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado al portapapeles.",
+    "copyFailed": "No se pudo copiar el enlace."
   },
   "Contact": {
     "pageTitle": "Contáctanos",

@@ -8,6 +8,7 @@ import type { Post } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { formatDate, truncate } from "@/lib/utils";
+import { PostShareButtons } from "@/components/blog/PostShareButtons";
 
 interface PostCardProps {
   post: Post;
@@ -75,6 +76,7 @@ export function PostCard({ post, priorityImage = false }: PostCardProps) {
             <MessageSquare className="size-3.5 text-primary/80" aria-hidden />
             {post.commentsCount ?? 0}
           </span>
+          <PostShareButtons title={post.title} slug={post.slug} compact className="ml-auto" />
         </CardFooter>
       </Card>
     </motion.div>

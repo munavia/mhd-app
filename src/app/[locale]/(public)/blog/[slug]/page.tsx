@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageHero } from "@/components/layout/PageHero";
 import { heroImages } from "@/lib/heroImages";
 import { LikeButton } from "@/components/blog/LikeButton";
+import { PostShareButtons } from "@/components/blog/PostShareButtons";
 import { CommentSection } from "@/components/blog/CommentSection";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -117,7 +119,7 @@ export default function BlogPostPage() {
         ) : (
           <article className="pb-20">
             <PageHero
-              imageSrc={imageUrl || heroImages.blogPostFallback}
+              imageSrc={heroImages.blog}
             >
               <div className="mx-auto max-w-3xl">
                 <Link
@@ -157,12 +159,27 @@ export default function BlogPostPage() {
                       </p>
                     </div>
                   </div>
-                  <LikeButton postId={post.id} initialLikesCount={post.likesCount ?? 0} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <LikeButton postId={post.id} initialLikesCount={post.likesCount ?? 0} />
+                    <PostShareButtons title={post.title} slug={post.slug} />
+                  </div>
                 </div>
               </div>
             </PageHero>
 
             <div className="container mx-auto max-w-3xl px-4 py-10">
+              {imageUrl ? (
+                <div className="relative mb-10 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm">
+                  <Image
+                    src={imageUrl}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    priority
+                  />
+                </div>
+              ) : null}
               <div
                 className={cn(BLOG_CONTENT_CLASS)}
                 dangerouslySetInnerHTML={{ __html: safeHtml }}

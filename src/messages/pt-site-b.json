@@ -59,7 +59,13 @@
     "backToBlog": "Voltar ao blog",
     "allPosts": "Todas as publicações",
     "signInToLike": "Inicie sessão para gostar de publicações.",
-    "likeError": "Não foi possível atualizar o gosto. Tente novamente."
+    "likeError": "Não foi possível atualizar o gosto. Tente novamente.",
+    "shareGroup": "Partilhar esta publicação",
+    "shareWhatsApp": "Partilhar no WhatsApp",
+    "shareFacebook": "Partilhar no Facebook",
+    "copyLink": "Copiar ligação",
+    "linkCopied": "Ligação copiada para a área de transferência.",
+    "copyFailed": "Não foi possível copiar a ligação."
   },
   "Contact": {
     "pageTitle": "Contacte-nos",
