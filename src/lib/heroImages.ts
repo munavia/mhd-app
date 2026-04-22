@@ -1,6 +1,6 @@
 /**
  * Local assets copied from `Website Content/Web-Images` → `public/images/web`.
- * Used as full-width hero backgrounds (CSS `background-image`, no optimizer).
+ * Used by `PageHero` with `next/image` (served as AVIF/WebP when supported).
  */
 const base = "/images/web";
 
