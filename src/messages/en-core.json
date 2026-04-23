@@ -62,5 +62,10 @@
     "all": "All",
     "member": "Member",
     "accountBlocked": "Your account has been blocked. Contact the ministry if you think this is a mistake."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try again"
   }
 }

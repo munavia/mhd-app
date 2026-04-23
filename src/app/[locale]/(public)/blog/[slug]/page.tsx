@@ -1,197 +1,75 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
-import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { PageHero } from "@/components/layout/PageHero";
-import { heroImages } from "@/lib/heroImages";
-import { LikeButton } from "@/components/blog/LikeButton";
-import { PostShareButtons } from "@/components/blog/PostShareButtons";
-import { CommentSection } from "@/components/blog/CommentSection";
-import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn, formatDate, getInitials } from "@/lib/utils";
-import { sanitizeHtml } from "@/lib/sanitize";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import type { Timestamp } from "firebase/firestore";
 import { getPostBySlug } from "@/services/postService";
+import {
+  blogPostAbsoluteUrl,
+  postDescriptionForMeta,
+  postOgImageUrl,
+} from "@/lib/siteUrl";
 import type { Post } from "@/types";
+import BlogPostClient from "./BlogPostClient";
 
-const BLOG_CONTENT_CLASS =
-  "max-w-none text-base leading-relaxed [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mb-2 [&_p]:mb-4 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_li]:mb-1 [&_a]:text-primary [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-primary/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4 [&_img]:rounded-lg [&_img]:my-4 [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded";
+const SITE_NAME = "Ministry of Healing and Deliverance";
 
-export default function BlogPostPage() {
-  const t = useTranslations("Blog");
-  const params = useParams();
-  const slug = typeof params.slug === "string" ? params.slug : "";
+function timestampToIso(value: Post["publishedAt"] | Post["updatedAt"]): string | undefined {
+  if (!value) return undefined;
+  const v = value as Timestamp;
+  if (typeof v?.toDate === "function") {
+    return v.toDate().toISOString();
+  }
+  return undefined;
+}
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [safeHtml, setSafeHtml] = useState("");
+type Props = {
+  params: Promise<{ locale: string; slug: string }>;
+};
 
-  useEffect(() => {
-    if (!slug) {
-      setLoading(false);
-      setNotFound(true);
-      return;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+
+  const t = await getTranslations({ locale, namespace: "Blog" });
+
+  try {
+    const post = await getPostBySlug(slug);
+    if (!post) {
+      return { title: t("postNotFound") };
     }
 
-    let cancelled = false;
-    setLoading(true);
-    setNotFound(false);
+    const description = postDescriptionForMeta(post);
+    const url = blogPostAbsoluteUrl(post.slug, locale);
+    const ogImage = postOgImageUrl(post);
+    const published = timestampToIso(post.publishedAt);
+    const modified = timestampToIso(post.updatedAt) ?? published;
 
-    void (async () => {
-      try {
-        const data = await getPostBySlug(slug);
-        if (cancelled) return;
-        if (!data || data.status !== "published") {
-          setPost(null);
-          setNotFound(true);
-          setSafeHtml("");
-        } else {
-          setPost(data);
-          setNotFound(false);
-        }
-      } catch {
-        if (!cancelled) {
-          setPost(null);
-          setNotFound(true);
-          setSafeHtml("");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
+    return {
+      title: post.title,
+      description,
+      alternates: url ? { canonical: url } : undefined,
+      openGraph: {
+        type: "article",
+        siteName: SITE_NAME,
+        title: post.title,
+        description,
+        ...(url ? { url } : {}),
+        ...(published ? { publishedTime: published } : {}),
+        ...(modified ? { modifiedTime: modified } : {}),
+        ...(ogImage ? { images: [{ url: ogImage, alt: post.title }] } : {}),
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description,
+        ...(ogImage ? { images: [ogImage] } : {}),
+      },
     };
-  }, [slug]);
+  } catch {
+    return { title: t("postNotFound") };
+  }
+}
 
-  useEffect(() => {
-    if (!post?.content) {
-      setSafeHtml("");
-      return;
-    }
-    setSafeHtml(sanitizeHtml(post.content));
-  }, [post?.content]);
-
-  const imageUrl = post?.featuredImage?.trim();
-  const displayDate = post ? post.publishedAt ?? post.createdAt : undefined;
-
-  return (
-    <>
-      <Navbar />
-      <main className="flex-1 pt-16">
-        {loading ? (
-          <div className="container mx-auto max-w-3xl px-4 py-12">
-            <Skeleton className="mb-6 h-9 w-32" />
-            <Skeleton className="h-52 w-full rounded-xl md:h-64" />
-            <div className="mt-8 space-y-3">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          </div>
-        ) : notFound || !post ? (
-          <div className="container mx-auto max-w-lg px-4 py-24 text-center">
-            <h1 className="font-heading text-3xl font-bold">{t("postNotFound")}</h1>
-            <p className="mt-3 text-muted-foreground">
-              {t("postMoved")}
-            </p>
-            <Link
-              href="/blog"
-              className={cn(buttonVariants({ size: "lg" }), "mt-8 inline-flex gap-2")}
-            >
-              <ArrowLeft className="size-4" aria-hidden />
-              {t("backToBlog")}
-            </Link>
-          </div>
-        ) : (
-          <article className="pb-20">
-            <PageHero
-              imageSrc={heroImages.blog}
-            >
-              <div className="mx-auto max-w-3xl">
-                <Link
-                  href="/blog"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "sm" }),
-                    "mb-6 -ml-2 gap-2 text-foreground/78 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-50"
-                  )}
-                >
-                  <ArrowLeft className="size-4" aria-hidden />
-                  {t("allPosts")}
-                </Link>
-
-                {post.categories.length > 0 && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {post.categories.map((cat) => (
-                      <Badge key={cat} variant="secondary">
-                        {cat}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                  {post.title}
-                </h1>
-
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3">
-                    <Avatar size="lg">
-                      <AvatarFallback>{getInitials(post.authorName)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium leading-none">{post.authorName}</p>
-                      <p className="mt-1 text-sm text-foreground/75 dark:text-zinc-300">
-                        {formatDate(displayDate)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <LikeButton postId={post.id} initialLikesCount={post.likesCount ?? 0} />
-                    <PostShareButtons title={post.title} slug={post.slug} />
-                  </div>
-                </div>
-              </div>
-            </PageHero>
-
-            <div className="container mx-auto max-w-3xl px-4 py-10">
-              {imageUrl ? (
-                <div className="relative mb-10 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm">
-                  <Image
-                    src={imageUrl}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 768px"
-                  />
-                </div>
-              ) : null}
-              <div
-                className={cn(BLOG_CONTENT_CLASS)}
-                dangerouslySetInnerHTML={{ __html: safeHtml }}
-              />
-
-              <Separator className="my-12" />
-
-              <CommentSection postId={post.id} />
-            </div>
-          </article>
-        )}
-      </main>
-      <Footer />
-    </>
-  );
+export default async function BlogPostPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  return <BlogPostClient />;
 }

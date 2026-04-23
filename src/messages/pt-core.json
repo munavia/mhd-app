@@ -62,5 +62,10 @@
     "all": "Todos",
     "member": "Membro",
     "accountBlocked": "A sua conta foi bloqueada. Contacte o ministério se achar que é um erro."
+  },
+  "Error": {
+    "title": "Algo correu mal",
+    "description": "Ocorreu um erro inesperado. Tente novamente.",
+    "tryAgain": "Tentar novamente"
   }
 }
