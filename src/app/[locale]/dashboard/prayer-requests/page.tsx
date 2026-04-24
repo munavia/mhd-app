@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Eye, Trash2 } from "lucide-react";
+import { EmailReplyActions } from "@/components/dashboard/EmailReplyActions";
+import { buildPrayerReplyBody } from "@/lib/emailReply";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +38,7 @@ import type { PrayerRequest } from "@/types";
 
 export default function DashboardPrayerRequestsPage() {
   const t = useTranslations("Dashboard.prayerAdmin");
+  const tReply = useTranslations("Dashboard.emailReply");
   const tCommon = useTranslations("Common");
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -184,7 +187,7 @@ export default function DashboardPrayerRequestsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
+                          <div className="flex flex-wrap items-center justify-end gap-1">
                             <Button
                               type="button"
                               variant="ghost"
@@ -194,6 +197,12 @@ export default function DashboardPrayerRequestsPage() {
                             >
                               <Eye className="size-4" />
                             </Button>
+                            <EmailReplyActions
+                              email={r.email ?? ""}
+                              subject={tReply("replySubjectPrayer")}
+                              body={buildPrayerReplyBody(r.name, r.request)}
+                              variant="icons"
+                            />
                             <Button
                               type="button"
                               variant="outline"
@@ -242,10 +251,22 @@ export default function DashboardPrayerRequestsPage() {
             </DialogDescription>
           </DialogHeader>
           <p className="whitespace-pre-wrap text-sm">{viewRequest?.request}</p>
-          <DialogFooter>
+          <DialogFooter className="!flex w-full !flex-row !flex-wrap items-center justify-between gap-2 sm:!items-center sm:!justify-between">
+            {viewRequest ? (
+              <EmailReplyActions
+                email={viewRequest.email ?? ""}
+                subject={tReply("replySubjectPrayer")}
+                body={buildPrayerReplyBody(
+                  viewRequest.name,
+                  viewRequest.request
+                )}
+                variant="dialog"
+              />
+            ) : null}
             <Button
               type="button"
               variant="outline"
+              className="shrink-0"
               onClick={() => setViewRequest(null)}
             >
               {t("close")}

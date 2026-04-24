@@ -23,6 +23,15 @@
       "title": "Painel",
       "toggleTheme": "Alternar tema"
     },
+    "emailReply": {
+      "replySubjectPrayer": "Re: O seu pedido de oração",
+      "openGmail": "Gmail",
+      "openGmailLong": "Responder no Gmail",
+      "openGmailAria": "Responder no Gmail (abre no browser)",
+      "openMailApp": "Correio",
+      "openMailAppLong": "Responder na app de correio",
+      "openMailAppAria": "Responder com a aplicação de e-mail predefinida"
+    },
     "overview": {
       "welcome": "Bem-vindo, {name}",
       "subtitle": "Um resumo rápido do site do seu ministério.",

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Eye, Trash2 } from "lucide-react";
+import { EmailReplyActions } from "@/components/dashboard/EmailReplyActions";
+import { buildContactReplyBody } from "@/lib/emailReply";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -188,7 +190,7 @@ export default function DashboardMessagesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
+                      <div className="flex flex-wrap items-center justify-end gap-1">
                         <Button
                           type="button"
                           variant="ghost"
@@ -198,6 +200,12 @@ export default function DashboardMessagesPage() {
                         >
                           <Eye className="size-4" />
                         </Button>
+                        <EmailReplyActions
+                          email={m.email}
+                          subject={`Re: ${m.subject}`}
+                          body={buildContactReplyBody(m.name, m.message)}
+                          variant="icons"
+                        />
                         <Button
                           type="button"
                           variant="ghost"
@@ -229,19 +237,29 @@ export default function DashboardMessagesPage() {
           <p className="whitespace-pre-wrap text-sm text-foreground">
             {active?.message}
           </p>
-          <DialogFooter className="flex-col gap-2 sm:flex-row">
-            {!active?.read && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => void markReadFromDialog()}
-              >
-                {t("markRead")}
+          <DialogFooter className="!flex w-full !flex-row !flex-wrap items-center justify-between gap-2 sm:!items-center sm:!justify-between">
+            {active ? (
+              <EmailReplyActions
+                email={active.email}
+                subject={`Re: ${active.subject}`}
+                body={buildContactReplyBody(active.name, active.message)}
+                variant="dialog"
+              />
+            ) : null}
+            <div className="flex shrink-0 items-center gap-2">
+              {!active?.read && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => void markReadFromDialog()}
+                >
+                  {t("markRead")}
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={() => setActive(null)}>
+                {t("close")}
               </Button>
-            )}
-            <Button type="button" variant="outline" onClick={() => setActive(null)}>
-              {t("close")}
-            </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

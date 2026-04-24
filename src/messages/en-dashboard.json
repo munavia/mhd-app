@@ -23,6 +23,15 @@
       "title": "Dashboard",
       "toggleTheme": "Toggle theme"
     },
+    "emailReply": {
+      "replySubjectPrayer": "Re: Your prayer request",
+      "openGmail": "Gmail",
+      "openGmailLong": "Reply in Gmail",
+      "openGmailAria": "Reply in Gmail (opens in your browser)",
+      "openMailApp": "Mail",
+      "openMailAppLong": "Reply in mail app",
+      "openMailAppAria": "Reply using your default email app"
+    },
     "overview": {
       "welcome": "Welcome back, {name}",
       "subtitle": "Here is a quick snapshot of your ministry site.",
