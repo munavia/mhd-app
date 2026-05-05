@@ -46,6 +46,32 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
+/**
+ * `next-firebase-auth-edge` builds the Referer for `/api/login` token exchange using
+ * `X-Forwarded-Proto` + Host. Firebase App Hosting / Cloud Run requests often omit
+ * `X-Forwarded-Proto`, so Referer becomes a bare hostname; Google's Identity Toolkit
+ * can reject that while Netlify (which sends the header) succeeds.
+ */
+function withProxyForwardedProto(request: NextRequest): NextRequest {
+  if (request.headers.get("x-forwarded-proto")) {
+    return request;
+  }
+  const host =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    "";
+  if (
+    !host ||
+    host.startsWith("localhost") ||
+    host.startsWith("127.0.0.1")
+  ) {
+    return request;
+  }
+  const headers = new Headers(request.headers);
+  headers.set("x-forwarded-proto", "https");
+  return new NextRequest(request.url, { headers });
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
@@ -55,8 +81,9 @@ export async function middleware(request: NextRequest) {
 
   const bare = stripLocale(pathname);
   const localePrefix = getLocalePrefix(pathname);
+  const proxiedRequest = withProxyForwardedProto(request);
 
-  return authMiddleware(request, {
+  return authMiddleware(proxiedRequest, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
     apiKey: process.env.FIREBASE_API_KEY!,
