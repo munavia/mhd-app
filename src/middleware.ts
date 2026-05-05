@@ -53,22 +53,23 @@ function isPublicPath(pathname: string): boolean {
  * can reject that while Netlify (which sends the header) succeeds.
  */
 function withProxyForwardedProto(request: NextRequest): NextRequest {
-  if (request.headers.get("x-forwarded-proto")) {
-    return request;
-  }
-  const host =
-    request.headers.get("x-forwarded-host") ??
-    request.headers.get("host") ??
-    "";
-  if (
-    !host ||
-    host.startsWith("localhost") ||
-    host.startsWith("127.0.0.1")
-  ) {
-    return request;
-  }
   const headers = new Headers(request.headers);
-  headers.set("x-forwarded-proto", "https");
+  
+  if (!headers.get("x-forwarded-proto")) {
+    const host = headers.get("x-forwarded-host") ?? headers.get("host") ?? "";
+    if (host && !host.startsWith("localhost") && !host.startsWith("127.0.0.1")) {
+      headers.set("x-forwarded-proto", "https");
+    }
+  }
+  
+  // Also ensure Host header is set for proper Referer construction
+  if (!headers.get("host")) {
+    const forwardedHost = headers.get("x-forwarded-host");
+    if (forwardedHost) {
+      headers.set("host", forwardedHost);
+    }
+  }
+  
   return new NextRequest(request.url, { headers });
 }
 

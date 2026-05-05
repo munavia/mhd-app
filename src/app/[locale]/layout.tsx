@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { DocumentLang } from "@/components/providers/DocumentLang";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ProgressBarProvider } from "@/components/providers/ProgressBarProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 
@@ -25,6 +26,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <DocumentLang />
+      <ProgressBarProvider />
       <QueryProvider>
         <AuthProvider>
           <TooltipProvider>

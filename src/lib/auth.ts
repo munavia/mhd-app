@@ -61,8 +61,18 @@ async function setSessionCookie(user: FirebaseUser) {
     headers: { Authorization: `Bearer ${idToken}` },
   });
   if (!res.ok) {
+    let errorDetail = `Status ${res.status}`;
+    try {
+      const body = await res.json();
+      errorDetail = body.message || errorDetail;
+      console.error("Session cookie error:", { status: res.status, body });
+    } catch {
+      const text = await res.text().catch(() => "");
+      console.error("Session cookie error:", { status: res.status, text });
+      errorDetail = text || errorDetail;
+    }
     await firebaseSignOut(auth);
-    throw new Error(`Session cookie failed (${res.status})`);
+    throw new Error(`Session cookie failed: ${errorDetail}`);
   }
 }
 
