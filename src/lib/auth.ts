@@ -55,10 +55,15 @@ function getAuthActionCodeSettings(): ActionCodeSettings {
 
 async function setSessionCookie(user: FirebaseUser) {
   const idToken = await user.getIdToken();
-  await fetch("/api/login", {
+  const res = await fetch("/api/login", {
     method: "GET",
+    credentials: "include",
     headers: { Authorization: `Bearer ${idToken}` },
   });
+  if (!res.ok) {
+    await firebaseSignOut(auth);
+    throw new Error(`Session cookie failed (${res.status})`);
+  }
 }
 
 async function clearSessionCookie() {

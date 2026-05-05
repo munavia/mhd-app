@@ -138,6 +138,7 @@
       "tooManyRequests": "Too many attempts. Please try again later.",
       "popupClosed": "Sign-in was cancelled. Please try again.",
       "unauthorizedDomain": "This domain is not authorized for sign-in. Please contact the administrator.",
+      "sessionCookie": "Sign-in succeeded but the server session could not be saved. Contact support if this keeps happening.",
       "generic": "Something went wrong. Please try again."
     },
     "signupTitle": "Join our community",

@@ -62,6 +62,9 @@ const AUTH_ERROR_KEYS: Record<string, string> = {
 };
 
 function authErrorKey(err: unknown): string {
+  if (err instanceof Error && err.message.startsWith("Session cookie failed")) {
+    return "errors.sessionCookie";
+  }
   if (err && typeof err === "object" && "code" in err) {
     const code = String((err as { code?: string }).code);
     if (code in AUTH_ERROR_KEYS) return AUTH_ERROR_KEYS[code];
@@ -143,7 +146,7 @@ function LoginPageContent() {
       clearAttempts();
       toast.success(t("welcomeBack"));
       router.refresh();
-      router.replace(afterAuthPath ?? "/dashboard");
+      router.replace(afterAuthPath ?? "/");
     } catch (err) {
       if (err instanceof EmailNotVerifiedError) {
         toast.warning(t("verifyWarning"), { duration: 8000 });
@@ -173,7 +176,7 @@ function LoginPageContent() {
       clearAttempts();
       toast.success(t("googleWelcome"));
       router.refresh();
-      router.replace(afterAuthPath ?? "/dashboard");
+      router.replace(afterAuthPath ?? "/");
     } catch (err) {
       toast.error(t(authErrorKey(err)));
     } finally {

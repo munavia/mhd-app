@@ -138,6 +138,7 @@
       "tooManyRequests": "Demasiados intentos. Inténtalo más tarde.",
       "popupClosed": "Se canceló el inicio de sesión. Inténtalo de nuevo.",
       "unauthorizedDomain": "Este dominio no está autorizado para iniciar sesión. Contacta al administrador.",
+      "sessionCookie": "El inicio de sesión funcionó pero no se pudo guardar la sesión del servidor. Contacta al soporte si continúa ocurriendo.",
       "generic": "Algo salió mal. Inténtalo de nuevo."
     },
     "signupTitle": "Únete a nuestra comunidad",
